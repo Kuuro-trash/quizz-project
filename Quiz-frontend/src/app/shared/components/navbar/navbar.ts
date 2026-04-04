@@ -1,13 +1,18 @@
-import { Component, Input } from '@angular/core'; // Thêm Input ở đây
+import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common'; // Cần thiết để dùng *ngIf
+import { RouterModule } from '@angular/router';
 
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, RouterModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })
 export class Navbar {
-  @Input() type: string = 'default'; // Khai báo biến để nhận dữ liệu từ layout
+// Thêm 'auth' vào danh sách này
+@Input() type: 'auth' | 'home' | 'profile' | 'game' | 'auth-signin' | 'auth-signup' = 'home';
+ 
+  username: string = 'Alex Rivera';
 }

@@ -1,0 +1,73 @@
+/* Tận dụng lại host và card từ login */
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 150px);
+  padding: 40px;
+  background-color: #F9F5FF;
+}
+
+.login-card {
+  display: flex;
+  width: 100%;
+  max-width: 1050px;
+  min-height: 700px; /* Cao hơn một chút vì thêm ô input */
+  background: white;
+  border-radius: 40px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(112, 41, 255, 0.15);
+}
+
+.login-left {
+  flex: 1.1;
+  background: #2D0B7A url('/assets/images/3d-register-bg.png') no-repeat center;
+  background-size: cover;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  color: white;
+}
+
+.login-right { flex: 1; padding: 40px 60px; display: flex; flex-direction: column; justify-content: center; }
+
+/* Form Elements (Copy y hệt login.css) */
+.form-container { width: 100%; max-width: 400px; margin: 0 auto; }
+.form-container h2 { font-size: 32px; font-weight: 700; color: #101828; margin-bottom: 8px; }
+.subtitle { color: #667085; font-size: 14px; margin-bottom: 25px; }
+
+.btn-google {
+  width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #EAECF0;
+  background: #F4EBFF; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 10px;
+}
+
+.divider { text-align: center; margin: 25px 0; position: relative; }
+.divider::before { content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background: #EAECF0; }
+.divider span { position: relative; background: white; padding: 0 15px; font-size: 11px; color: #98A2B3; font-weight: 700; }
+
+/* Input Styles */
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-size: 11px; font-weight: 800; margin-bottom: 8px; color: #344054; }
+.input-wrapper { position: relative; display: flex; align-items: center; }
+.icon-left { position: absolute; left: 15px; color: #98A2B3; }
+.eye-icon { position: absolute; right: 15px; cursor: pointer; color: #98A2B3; }
+.input-wrapper input { width: 100%; padding: 14px 45px; border: none; background: #F4EBFF; border-radius: 12px; box-sizing: border-box; }
+
+/* Nút Đăng ký (Màu Gradient Tím -> Hồng) */
+.btn-register {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(90deg, #6A1BFF 0%, #C00A82 100%);
+  color: white;
+  border: none;
+  border-radius: 15px;
+  font-weight: 700;
+  font-size: 16px;
+  margin-top: 10px;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(192, 10, 130, 0.2);
+}
+
+.footer-terms { margin-top: 25px; font-size: 10px; color: #98A2B3; text-align: center; }
+.footer-terms a { color: #667085; font-weight: 600; }
