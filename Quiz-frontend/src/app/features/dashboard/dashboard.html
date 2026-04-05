@@ -9,23 +9,15 @@
     <div class="hero-right">
       <div class="pin-group-box">
         <span class="enter-pin-label">ENTER PIN</span>
-        <div class="pin-inputs" style="position: relative;">
-          <!-- Nh?p th?c t? ? m?t input ?n -->
+        <div class="pin-inputs">
           <input
               type="text"
               maxlength="6"
-              class="hidden-pin-input"
+              class="large-pin-input"
               [(ngModel)]="joinPin"
               name="main_pin"
+              placeholder="000000"
           />
-
-          <!-- Giao di?n hi?n th? (6 ô tr?ng) -->
-          <div class="pin-field">{{ joinPin[0] || '•' }}</div>
-          <div class="pin-field">{{ joinPin[1] || '•' }}</div>
-          <div class="pin-field">{{ joinPin[2] || '•' }}</div>
-          <div class="pin-field">{{ joinPin[3] || '•' }}</div>
-          <div class="pin-field">{{ joinPin[4] || '•' }}</div>
-          <div class="pin-field">{{ joinPin[5] || '•' }}</div>
         </div>
         <button class="btn-join-hero" [disabled]="joinPin.length < 6">
           JOIN GAME <span class="material-icons">bolt</span>

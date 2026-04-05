@@ -10,16 +10,13 @@
       <span class="pin-badge">ENTER PIN</span>
       
       <div class="pin-input-group">
-        <input type="text" [(ngModel)]="joinPin" maxlength="6" class="hidden-pin-input" (input)="onPinInput($event)">
-        
-        <div class="pin-field">{{ joinPin[0] || '' }}</div>
-        <div class="pin-field">{{ joinPin[1] || '' }}</div>
-        <div class="pin-field">{{ joinPin[2] || '' }}</div>
-        <div class="pin-divider"></div>
-        <div class="pin-field">{{ joinPin[3] || '' }}</div>
-        <div class="pin-field">{{ joinPin[4] || '' }}</div>
-        <div class="pin-field">{{ joinPin[5] || '' }}</div>
-      </div>
+        <input 
+          type="text" 
+          [(ngModel)]="joinPin" 
+          maxlength="6" 
+          class="large-pin-input" 
+          placeholder="000000"
+          (input)="onPinInput($event)">
       
       <button class="btn-join">
         JOIN GAME <i class="bolt-icon">⚡</i>

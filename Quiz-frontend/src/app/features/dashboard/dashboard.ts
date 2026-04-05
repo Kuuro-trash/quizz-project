@@ -26,30 +26,30 @@ export class Dashboard implements OnInit {
     }
   }
 
-  // M?ng d? li?u cho 4 Quiz Recommended
+  // Máº£ng dá»¯ liá»‡u cho 4 Quiz Recommended
  quizzes = [
     {
       id: 1,
       title: 'World Geography Challenge',
-      stats: '1.2k Plays • 15 Questions',
+      stats: '1.2k Plays â€¢ 15 Questions',
       img: '/Geography.png'
     },
     {
       id: 2,
       title: 'Arts and Music',
-      stats: '850 Plays • 10 Questions',
+      stats: '850 Plays â€¢ 10 Questions',
       img: '/Arts.png'
     },
     {
       id: 3,
       title: 'Who is a millionaire?',
-      stats: '3.4k Plays • 12 Questions',
+      stats: '3.4k Plays â€¢ 12 Questions',
       img: '/Money.png'
     },
     {
       id: 4,
       title: 'Who is smarter than the fifth grade?',
-      stats: '2.1k Plays • 20 Questions',
+      stats: '2.1k Plays â€¢ 20 Questions',
       img: '/School.png'
     }
   ];
