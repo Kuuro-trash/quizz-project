@@ -3,6 +3,12 @@
     <div class="logo" routerLink="/">JUST4QUIZ</div>
   </div>
 
+  <div class="nav-center" *ngIf="type === 'profile' || type === 'dashboard'">
+    <a class="nav-link" routerLink="/app/dashboard" routerLinkActive="active-link">Home</a>
+    <a class="nav-link" routerLink="/app/quizzes" routerLinkActive="active-link">Quizzes</a>
+    <a class="nav-link" routerLink="/app/leaderboard" routerLinkActive="active-link">Leaderboard</a>
+    <a class="nav-link" routerLink="/app/profile" routerLinkActive="active-link">Profile</a>
+  </div>
 
   <div class="nav-right">
     <div class="auth-buttons" *ngIf="type === 'home'">
@@ -10,18 +16,24 @@
       <a class="btn-primary" routerLink="/register">Sign Up</a>
     </div>
 
-
     <div class="auth-switch" *ngIf="type === 'auth-signin'">
       <span class="switch-text">Don't have an account?
         <a routerLink="/register" class="link-purple">Sign up here</a>
       </span>
     </div>
 
-
     <div class="auth-switch" *ngIf="type === 'auth-signup'">
       <span class="switch-text">Already a member?
         <a routerLink="/login" class="link-purple">Sign in here</a>
       </span>
+    </div>
+
+    <div class="profile-menu" *ngIf="type === 'profile' || type === 'dashboard'">
+      <span class="profile-name">{{ username }}</span>
+      <div class="avatar-circle">
+        <img src="/User.png" alt="Avatar" class="avatar-img" onerror="this.src='https://via.placeholder.com/36?text=U'">
+      </div>
+      <span class="material-icons drop-icon">expand_more</span>
     </div>
   </div>
 </nav>

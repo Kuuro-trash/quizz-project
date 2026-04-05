@@ -1,18 +1,29 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Cần thiết để dùng *ngIf
+import { Component, Input, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './navbar.html',
-  styleUrl: './navbar.css'
+  styleUrls: ['./navbar.css']
 })
-export class Navbar {
-// Thêm 'auth' vào danh sách này
-@Input() type: 'auth' | 'home' | 'profile' | 'game' | 'auth-signin' | 'auth-signup' | 'dashboard' = 'home';
- 
+export class Navbar implements OnInit {
+  @Input() type: 'auth' | 'home' | 'profile' | 'game' | 'auth-signin' | 'auth-signup' | 'dashboard' = 'home';
   username: string = 'Alex Rivera';
+
+  ngOnInit() {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        if (user && user.user_name) {
+          this.username = user.user_name;
+        }
+      } catch (e) {
+        console.error('Error parsing user', e);
+      }
+    }
+  }
 }
