@@ -1,0 +1,1 @@
+body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: #FAFAFA; color: #101828; overflow-x: hidden; } .main-layout { display: flex; flex-direction: column; min-height: 100vh; } .main-content { flex: 1; padding: 20px; background-color: #FAFAFA; }

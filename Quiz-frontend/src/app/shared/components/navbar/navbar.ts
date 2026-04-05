@@ -12,7 +12,7 @@ import { RouterModule } from '@angular/router';
 })
 export class Navbar {
 // Thêm 'auth' vào danh sách này
-@Input() type: 'auth' | 'home' | 'profile' | 'game' | 'auth-signin' | 'auth-signup' = 'home';
+@Input() type: 'auth' | 'home' | 'profile' | 'game' | 'auth-signin' | 'auth-signup' | 'dashboard' = 'home';
  
   username: string = 'Alex Rivera';
 }

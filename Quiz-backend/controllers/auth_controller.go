@@ -77,10 +77,11 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// 2. Tìm user theo email
-	if err := config.DB.Where("email = ?", input.Email).First(&user).Error; err != nil {
+	// 2. Tìm user theo email hoặc username
+	// Bạn có thể nhập Username hoặc Email vào ô Email đều được
+	if err := config.DB.Where("email = ? OR username = ?", input.Email, input.Email).First(&user).Error; err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Email hoặc mật khẩu không đúng!",
+			"error": "Email/Username hoặc mật khẩu không đúng!",
 		})
 		return
 	}
@@ -89,7 +90,7 @@ func Login(c *gin.Context) {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Email hoặc mật khẩu không đúng!",
+			"error": "Email/Username hoặc mật khẩu không đúng!",
 		})
 		return
 	}

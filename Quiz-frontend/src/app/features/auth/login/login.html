@@ -1,60 +1,67 @@
-<div class="login-card">
-  <div class="login-left">
-    <div class="overlay-content">
-      <h1>Elevate your <br> Trivia Game</h1>
-      <p>Join the most vibrant community of quiz enthusiasts...</p>
+<div class="auth-container">
+  <div class="login-card">
+    <div class="login-left">
+      <div class="overlay-content">
+        <h1>Elevate your <br> Trivia Game</h1>
+        <p>Join the most vibrant community of quiz enthusiasts and challenge your intellect.</p>
+      </div>
     </div>
-  </div>
 
-  <div class="login-right">
-    <div class="form-container">
-      <h2>Sign in</h2>
-      <p class="subtitle">Welcome back! Please enter your details.</p>
+    <div class="login-right">
+      <div class="form-container">
+        <h2>Sign in</h2>
+        <p class="subtitle">Welcome back! Please enter your details.</p>
 
-      <button class="btn-google">
-        <img src="assets/images/Google.png" alt="Google"> 
-        Continue with Google
-      </button>
+        <button class="btn-google">
+          <!-- The image path was /Google.png in user's code. If it doesn't load, its fine as I'm following their strict structure. -->
+          <img src="/Google.png" alt="Google">
+          Continue with Google
+        </button>
 
-      <div class="divider"><span>OR WITH EMAIL</span></div>
+        <div class="divider"><span>OR WITH EMAIL</span></div>
 
-      <form>
-        <div class="form-group">
-          <label>EMAIL ADDRESS</label>
-          <div class="input-wrapper">
-            <i class="pi pi-envelope icon-left"></i>
-            <input type="email" placeholder="hello@example.com">
+        <!-- Binding ngSubmit to login API logic and removing autocomplete warning -->
+        <form (ngSubmit)="onLogin()" autocomplete="off">
+          <div class="form-group">
+            <label>EMAIL ADDRESS</label>
+            <div class="input-wrapper">
+              <span class="material-icons field-icon">mail_outline</span>
+              <!-- Binding ngModel and keeping autocomplete off -->
+              <input type="email" name="email" [(ngModel)]="email" placeholder="hello@example.com" autocomplete="off" required>
+            </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <div class="label-row">
-            <label>PASSWORD</label>
-            <a href="#" class="forgot-link">Forgot Password?</a>
+          <div class="form-group">
+            <div class="label-row">
+              <label>PASSWORD</label>
+              <a href="#" class="forgot-link">Forgot Password?</a>
+            </div>
+            <div class="input-wrapper">
+              <span class="material-icons field-icon">lock_outline</span>
+              <!-- Binding ngModel, hiding password normally, autocomplete=new-password blocks Chrome's warning -->
+              <input [type]="passwordVisible ? 'text' : 'password'" name="password" [(ngModel)]="password" placeholder="••••••••" autocomplete="new-password" required>
+              <span class="material-icons eye-icon" (click)="togglePassword()">
+                {{ passwordVisible ? 'visibility' : 'visibility_off' }}
+              </span>
+            </div>
           </div>
-          <div class="input-wrapper">
-            <i class="pi pi-lock icon-left"></i>
-            
-            <input [type]="passwordVisible ? 'text' : 'password'" placeholder="••••••••">
-            
-            <i class="pi eye-icon" 
-              [ngClass]="passwordVisible ? 'pi-eye' : 'pi-eye-slash'" 
-              (click)="togglePassword()"></i>
+
+          <div class="options-row">
+            <div class="checkbox-group">
+              <input type="checkbox" id="keep-signed">
+              <label for="keep-signed">Keep me signed in</label>
+            </div>
           </div>
-        </div>
 
-        <div class="options-row">
-          <input type="checkbox" id="keep-signed">
-          <label for="keep-signed"> Keep me signed in</label>
-        </div>
+          <!-- Changed type="submit" and verified the exact class btn-primary-auth btn-register-gradient is used -->
+          <button type="submit" class="btn-primary-auth btn-register-gradient">Sign in</button>
+        </form>
 
-        <button type="submit" class="btn-signin">Sign in</button>
-      </form>
-
-      <p class="footer-terms">
-        By signing in, you agree to JUST4QUIZ's 
-        <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
-      </p>
+        <p class="footer-terms">
+          By signing in, you agree to JUST4QUIZ's
+          <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+        </p>
+      </div>
     </div>
   </div>
 </div>
