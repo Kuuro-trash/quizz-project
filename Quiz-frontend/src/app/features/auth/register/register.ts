@@ -20,8 +20,8 @@ export class Register {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  togglePassword() {
-    this.passwordVisible = !this.passwordVisible;
+  togglePassword() { 
+    this.passwordVisible = !this.passwordVisible; 
   }
 
   onRegister() {
