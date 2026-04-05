@@ -19,8 +19,8 @@
 
         <div class="divider"><span>OR WITH EMAIL</span></div>
 
-        <!-- Binding ngSubmit to register API logic and removing autocomplete warning -->
-        <form (ngSubmit)="onRegister()" autocomplete="off">
+<!-- Removing <form> completely to bypass Chrome password breach warning -->
+        <div class="login-form">
           <div class="form-group">
             <label>USERNAME</label>
             <div class="input-wrapper">
@@ -42,16 +42,16 @@
             <label>PASSWORD</label>
             <div class="input-wrapper">
               <span class="material-icons field-icon">lock_outline</span>
-              <!-- Binding ngModel, hiding password normally, autocomplete=new-password blocks Chrome's warning -->
-              <input [type]="passwordVisible ? 'text' : 'password'" name="password" [(ngModel)]="password" placeholder="••••••••" autocomplete="new-password" required>
+              <!-- CSS text security trick replaces standard password functionality, tricking Chromium browsers -->
+              <input type="text" [style.-webkit-text-security]="passwordVisible ? 'none' : 'disc'" class="password-input-bypass" name="password" [(ngModel)]="password" placeholder="••••••••" autocomplete="off" required>
               <span class="material-icons eye-icon" (click)="togglePassword()">
                 {{ passwordVisible ? 'visibility' : 'visibility_off' }}
               </span>
             </div>
           </div>
 
-          <button type="submit" class="btn-primary-auth btn-register-gradient">Create Account</button>
-        </form>
+          <button type="button" (click)="onRegister()" class="btn-primary-auth btn-register-gradient">Create Account</button>
+        </div>
 
         <p class="footer-terms">
           By creating an account, you agree to JUST4QUIZ's

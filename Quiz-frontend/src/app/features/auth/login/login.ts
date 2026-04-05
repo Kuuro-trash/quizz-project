@@ -36,7 +36,7 @@ export class Login {
       next: (res: any) => {
         console.log('Login success:', res);
         localStorage.setItem('token', res?.token || 'test-token');
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/app/dashboard']);
       },
       error: (err) => {
         console.error('Login error:', err);

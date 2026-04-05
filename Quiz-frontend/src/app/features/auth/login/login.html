@@ -20,13 +20,12 @@
 
         <div class="divider"><span>OR WITH EMAIL</span></div>
 
-        <!-- Binding ngSubmit to login API logic and removing autocomplete warning -->
-        <form (ngSubmit)="onLogin()" autocomplete="off">
+        <!-- Removing <form> completely to bypass Chrome password breach warning -->
+        <div class="login-form">
           <div class="form-group">
             <label>EMAIL ADDRESS</label>
             <div class="input-wrapper">
               <span class="material-icons field-icon">mail_outline</span>
-              <!-- Binding ngModel and keeping autocomplete off -->
               <input type="email" name="email" [(ngModel)]="email" placeholder="hello@example.com" autocomplete="off" required>
             </div>
           </div>
@@ -38,8 +37,8 @@
             </div>
             <div class="input-wrapper">
               <span class="material-icons field-icon">lock_outline</span>
-              <!-- Binding ngModel, hiding password normally, autocomplete=new-password blocks Chrome's warning -->
-              <input [type]="passwordVisible ? 'text' : 'password'" name="password" [(ngModel)]="password" placeholder="••••••••" autocomplete="new-password" required>
+              <!-- CSS text security trick replaces standard password functionality, tricking Chromium browsers -->
+              <input type="text" [style.-webkit-text-security]="passwordVisible ? 'none' : 'disc'" class="password-input-bypass" name="password" [(ngModel)]="password" placeholder="••••••••" autocomplete="off" required>
               <span class="material-icons eye-icon" (click)="togglePassword()">
                 {{ passwordVisible ? 'visibility' : 'visibility_off' }}
               </span>
@@ -53,9 +52,9 @@
             </div>
           </div>
 
-          <!-- Changed type="submit" and verified the exact class btn-primary-auth btn-register-gradient is used -->
-          <button type="submit" class="btn-primary-auth btn-register-gradient">Sign in</button>
-        </form>
+          <!-- Used a regular click event to replace standard form submit -->
+          <button type="button" (click)="onLogin()" class="btn-primary-auth btn-register-gradient">Sign in</button>
+        </div>
 
         <p class="footer-terms">
           By signing in, you agree to JUST4QUIZ's
