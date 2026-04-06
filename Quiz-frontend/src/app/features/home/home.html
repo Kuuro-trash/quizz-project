@@ -8,18 +8,26 @@
   <div class="pin-box-wrapper">
     <div class="pin-card">
       <span class="pin-badge">ENTER PIN</span>
-      
+
       <div class="pin-input-group">
         <input 
           type="text" 
           [(ngModel)]="joinPin" 
           maxlength="6" 
-          class="large-pin-input" 
-          placeholder="000000"
+          class="hidden-pin-input" 
           (input)="onPinInput($event)">
-      
+
+        <div class="pin-field" [class.placeholder]="!joinPin[0]">{{ joinPin[0] || '0' }}</div>
+        <div class="pin-field" [class.placeholder]="!joinPin[1]">{{ joinPin[1] || '0' }}</div>
+        <div class="pin-field" [class.placeholder]="!joinPin[2]">{{ joinPin[2] || '0' }}</div>
+        <div class="pin-divider"></div>
+        <div class="pin-field" [class.placeholder]="!joinPin[3]">{{ joinPin[3] || '0' }}</div>
+        <div class="pin-field" [class.placeholder]="!joinPin[4]">{{ joinPin[4] || '0' }}</div>
+        <div class="pin-field" [class.placeholder]="!joinPin[5]">{{ joinPin[5] || '0' }}</div>
+      </div>
+
       <button class="btn-join">
-        JOIN GAME <i class="bolt-icon">⚡</i>
+        JOIN GAME <span class="material-icons bolt-icon">bolt</span>
       </button>
     </div>
   </div>

@@ -1,9 +1,14 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-create-quiz',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './create-quiz.html',
-  styleUrl: './create-quiz.css',
+  styleUrls: ['./create-quiz.css']
 })
-export class CreateQuiz {}
+export class CreateQuiz {
+  // Logic x? lý thêm câu h?i, luu quiz s? du?c Backend x? lý sau
+}

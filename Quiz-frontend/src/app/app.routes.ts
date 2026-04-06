@@ -13,6 +13,7 @@ import { Login} from './features/auth/login/login';
 import { Register} from './features/auth/register/register';
 import { Dashboard} from './features/dashboard/dashboard';
 import { QuizList} from './features/quiz/quiz-list/quiz-list';
+import { CreateQuiz } from './features/quiz/create-quiz/create-quiz';
 import { GameRoom} from './features/game/game-room/game-room';
 
 
@@ -32,6 +33,7 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: Dashboard },
       { path: 'quizzes', component: QuizList },
+      { path: 'create-quiz', component: CreateQuiz },
     ]
   },
   {
