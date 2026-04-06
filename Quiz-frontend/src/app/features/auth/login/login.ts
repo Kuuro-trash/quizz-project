@@ -36,6 +36,12 @@ export class Login {
       next: (res: any) => {
         console.log('Login success:', res);
         localStorage.setItem('token', res?.token || 'test-token');
+        
+        // Save user info to show in Navbar / Dashboard
+        if (res?.user) {
+          localStorage.setItem('user', JSON.stringify(res.user));
+        }
+
         this.router.navigate(['/app/dashboard']);
       },
       error: (err) => {

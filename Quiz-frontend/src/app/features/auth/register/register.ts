@@ -37,8 +37,17 @@ export class Register {
     }).subscribe({
       next: (res: any) => {
         console.log('Register success:', res);
+        
+        // Save user info and login immediately
+        if (res?.user) {
+          localStorage.setItem('user', JSON.stringify(res.user));
+          localStorage.setItem('token', 'test-token'); // Replace this with real JWT token if backend implements it
+        }
+
         alert('Welcome ' + this.username + '! Starting your Journey...');
-        this.router.navigate(['/login']);
+        
+        // Auto-login after register
+        this.router.navigate(['/app/dashboard']);
       },
       error: (err) => {
         console.error('Register error:', err);

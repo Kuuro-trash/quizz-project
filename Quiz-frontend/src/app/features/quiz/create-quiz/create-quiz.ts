@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+﻿import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { QuizService } from '../../../services/quiz.service';
+import { Router } from '@angular/router';
 
 interface Answer {
   id: number;
@@ -25,6 +27,9 @@ interface Question {
   styleUrls: ['./create-quiz.css']
 })
 export class CreateQuiz {
+  private quizService = inject(QuizService);
+  private router = inject(Router);
+
   quizTitle = '';
   quizDescription = '';
   quizLevel = 'Easy';
@@ -91,8 +96,8 @@ export class CreateQuiz {
 
   addAnswer() {
     const q = this.activeQuestion;
-    if (q.answers.length >= 6) {
-      alert("Maximum 6 answers allowed.");
+    if (q.answers.length >= 4) {
+      alert("Maximum 4 answers allowed.");
       return;
     }
     const newId = q.answers.length > 0 ? Math.max(...q.answers.map(a => a.id)) + 1 : 1;
@@ -132,5 +137,53 @@ export class CreateQuiz {
         q.answers[0].isCorrect = true;
       }
     }
+  }
+
+  saveQuiz() {
+    if (!this.quizTitle.trim()) {
+      alert('Vui lòng nhập tên Quiz');
+      return;
+    }
+
+    // Validation (optional check, customize per need)
+    for (let i = 0; i < this.questions.length; i++) {
+        const q = this.questions[i];
+        if (!q.text.trim()) {
+            alert(`Câu hỏi ${i + 1} không được để trống`);
+            return;
+        }
+    }
+
+    const payload = {
+      title: this.quizTitle,
+      description: this.quizDescription,
+      level: this.quizLevel,
+      questions: this.questions.map(q => {
+        return {
+           content: q.text,
+           time_limit: q.timeLimit,
+           points: q.points,
+           multiple_correct: q.multipleCorrect,
+           answers: q.answers.map(a => ({
+             text: a.text,
+             is_correct: a.isCorrect
+           }))
+        };
+      })
+    };
+
+    console.log("Saving quiz with payload:", payload);
+    
+    this.quizService.createQuiz(payload).subscribe({
+      next: (res) => {
+        alert('Tạo Quiz thành công!');
+        this.router.navigate(['/app/dashboard']);
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Có lỗi xảy ra khi tạo Quiz: ' + (err.error?.message || err.message));
+      }
+    });
+
   }
 }

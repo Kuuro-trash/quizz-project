@@ -1,4 +1,4 @@
-<div class="create-quiz-wrapper">
+﻿<div class="create-quiz-wrapper">
   <div class="create-quiz-container">
 
     <aside class="sidebar-questions">
@@ -88,7 +88,7 @@
           </div>
         </div>
 
-        <div class="add-answer-wrapper" *ngIf="activeQuestion.answers.length < 6">
+        <div class="add-answer-wrapper" *ngIf="activeQuestion.answers.length < 4">
             <button class="btn-add-ans-solid" (click)="addAnswer()">+ Add Answer</button>
         </div>
 
@@ -117,8 +117,8 @@
       </section>
 
       <div class="final-actions">
-        <button class="btn-footer btn-save">Save Quiz</button>
-        <button class="btn-footer btn-publish">Publish Quiz</button>
+        <button class="btn-footer btn-save" (click)="saveQuiz()">Save Quiz</button>
+        <button class="btn-footer btn-publish" title="Publish later">Publish Quiz</button>
       </div>
     </main>
   </div>

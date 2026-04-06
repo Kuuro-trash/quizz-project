@@ -20,6 +20,8 @@ export class Navbar implements OnInit {
         const user = JSON.parse(storedUser);
         if (user && user.user_name) {
           this.username = user.user_name;
+        } else if (user && user.username) {
+          this.username = user.username;
         }
       } catch (e) {
         console.error('Error parsing user', e);
