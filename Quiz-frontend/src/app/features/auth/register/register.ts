@@ -55,4 +55,9 @@ export class Register {
       }
     });
   }
+
+  showComingSoon(event: Event) {
+    event.preventDefault();
+    alert('Tính năng này hiện tại chưa được cập nhật!');
+  }
 }

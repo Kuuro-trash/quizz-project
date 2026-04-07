@@ -1,1 +1,94 @@
-<p>quiz-list works!</p>
+<div class="quiz-list-wrapper">
+  <div class="hero-wrapper-container">
+    <section class="hero-section-custom">
+      <div class="hero-content-left">
+        <h1 class="welcome-text">Explore <span>Quizzes</span></h1>
+        <p class="hero-subtext">Test your knowledge across hundreds of categories and compete with the global community.</p>
+       
+        <div class="search-box-pill">
+          <span class="material-icons search-icon-left">search</span>
+          <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="saveState()" placeholder="Search for quizzes, topics, or authors..." class="search-input">
+          <button class="btn-search-pill">
+            <span class="material-icons">search</span> Search
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+  <div class="quiz-list-main-grid">
+    <aside class="sidebar-filters">
+      <div class="filter-card">
+        <h3 class="filter-main-title">Filters</h3>
+       
+        <div class="filter-group">
+          <label class="label-bold">Difficulty</label>
+          <div class="checkbox-list">
+            <label class="custom-check-item">
+              <input type="checkbox" [(ngModel)]="selectedLevels['Easy']" (ngModelChange)="saveState()"><span class="checkmark"></span> Easy
+            </label>
+            <label class="custom-check-item">
+              <input type="checkbox" [(ngModel)]="selectedLevels['Mid']" (ngModelChange)="saveState()"><span class="checkmark"></span> Mid
+            </label>
+            <label class="custom-check-item">
+              <input type="checkbox" [(ngModel)]="selectedLevels['Pro']" (ngModelChange)="saveState()"><span class="checkmark"></span> Pro
+            </label>
+          </div>
+        </div>
+
+
+        <div class="filter-group">
+          <label class="label-bold">Sort By</label>
+          <div class="select-ui-box">
+            <select>
+              <option value="recent">Most Recent</option>
+              <option value="played">Most Played</option>
+              <option value="popular">Popularity</option>
+              <option value="trending">Trending Now</option>
+              <option value="alphabetical">A - Z</option>
+            </select>
+            <span class="material-icons select-arrow-icon">expand_more</span>
+          </div>
+        </div>
+
+
+        <button class="btn-clear-all-outline" (click)="clearAll()">Clear All</button>
+      </div>
+    </aside>
+
+
+    <main class="quiz-content-area">
+      <div class="quiz-grid-6-cards">
+       
+        <div class="quiz-item-card" *ngFor="let quiz of filteredQuizzes">
+          <div class="thumb-wrap" [routerLink]="['/app/quiz-detail', quiz.id]">
+            <img [src]="quiz.image" [alt]="quiz.title">
+          </div>
+          <div class="card-details">
+            <h4 class="title-q">{{ quiz.title }}</h4>
+            <div class="user-row"><img src="User.png"><span>by {{ quiz.author }}</span></div>
+            <div class="stats-grid">
+              <div class="s-box"><span class="v">{{ quiz.items }}</span><span class="l">Items</span></div>
+              <div class="s-box"><span class="v">{{ quiz.plays }}</span><span class="l">Plays</span></div>
+              <div class="s-box"><span class="v">{{ quiz.level }}</span><span class="l">Level</span></div>
+            </div>
+            <button class="btn-play-gradient" [routerLink]="['/play/mode']" [queryParams]="{ title: quiz.title }">Start Quiz <span class="material-icons">play_arrow</span></button>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="pagination-container">
+        <button class="page-btn"><span class="material-icons">chevron_left</span></button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">4</button>
+        <button class="page-btn">5</button>
+        <button class="page-btn"><span class="material-icons">chevron_right</span></button>
+      </div>
+    </main>
+  </div>
+</div>

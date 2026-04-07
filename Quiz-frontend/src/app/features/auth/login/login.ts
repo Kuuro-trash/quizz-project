@@ -23,6 +23,11 @@ export class Login {
     this.passwordVisible = !this.passwordVisible; 
   }
 
+  showComingSoon(event: Event) {
+    event.preventDefault();
+    alert('Tính năng này hiện tại chưa được cập nhật!');
+  }
+
   onLogin() {
     if (!this.email || !this.password) {
       alert('Please enter email and password');

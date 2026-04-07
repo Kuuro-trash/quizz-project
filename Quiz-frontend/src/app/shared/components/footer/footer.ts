@@ -7,4 +7,9 @@ import { Component } from '@angular/core';
   templateUrl: './footer.html',
   styleUrl: './footer.css'
 })
-export class Footer { }
+export class Footer {
+  showComingSoon(event: Event) {
+    event.preventDefault();
+    alert('Tính năng này hiện tại chưa được cập nhật!');
+  }
+}
