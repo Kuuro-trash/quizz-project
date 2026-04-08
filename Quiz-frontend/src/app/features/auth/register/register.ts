@@ -1,8 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
+
+declare var google: any;
 
 @Component({
   selector: 'app-register',
@@ -11,7 +13,7 @@ import { Router, RouterModule } from '@angular/router';
   templateUrl: './register.html',
   styleUrls: ['./register.css']
 })
-export class Register {
+export class Register implements OnInit {
   passwordVisible: boolean = false;
   username = '';
   email = '';
@@ -19,6 +21,42 @@ export class Register {
 
   private http = inject(HttpClient);
   private router = inject(Router);
+  private ngZone = inject(NgZone);
+
+  ngOnInit() {
+    if (typeof google !== 'undefined') {
+      google.accounts.id.initialize({
+        client_id: '1071989516356-g8rlcjaq54f9mfhtefnt9o84m9gfkcki.apps.googleusercontent.com',
+        callback: (response: any) => this.handleGoogleLogin(response)
+      });
+      google.accounts.id.renderButton(
+        document.getElementById("google-btn"),
+        { theme: "outline", size: "large", width: 360, shape: "rectangular", type: "standard", text: "continue_with" }
+      );
+    }
+  }
+
+  handleGoogleLogin(response: any) {
+    if (response.credential) {
+      const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+      this.http.post('http://localhost:8080/auth/google', { token: response.credential }, { headers }).subscribe({
+        next: (res: any) => {
+          this.ngZone.run(() => {
+            if (res?.user) {
+              localStorage.setItem('user', JSON.stringify(res.user));
+              localStorage.setItem('token', res.token || 'fake_jwt_token');
+            }
+            alert('Welcome! Google Auth Successful.');
+            this.router.navigate(['/app/dashboard']);
+          });
+        },
+        error: (err) => {
+          console.error('Google register error:', err);
+          this.ngZone.run(() => alert('Google Register failed: ' + (err.error?.error || err.message)));
+        }
+      });
+    }
+  }
 
   togglePassword() { 
     this.passwordVisible = !this.passwordVisible; 

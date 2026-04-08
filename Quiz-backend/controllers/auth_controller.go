@@ -1,16 +1,16 @@
 package controllers
 
 import (
+	"context"
 	"net/http"
 	"quiz-backend/config"
 	"quiz-backend/models"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/api/idtoken"
 )
 
-// =======================
-// REGISTER
 // =======================
 func Register(c *gin.Context) {
 	var input models.User
@@ -98,6 +98,53 @@ func Login(c *gin.Context) {
 	// 4. Trả về user (KHÔNG trả password)
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Đăng nhập thành công!",
+		"user": gin.H{
+			"id":       user.ID,
+			"username": user.Username,
+			"email":    user.Email,
+		},
+	})
+}
+
+// =======================
+// GOOGLE LOGIN
+// =======================
+func GoogleLogin(c *gin.Context) {
+	var input struct {
+		Token string `json:"token"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Token missing"})
+		return
+	}
+
+	// Verify the ID token (client_id is used exactly as defined in the frontend)
+	payload, err := idtoken.Validate(context.Background(), input.Token, "1071989516356-g8rlcjaq54f9mfhtefnt9o84m9gfkcki.apps.googleusercontent.com")
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid Google token"})
+		return
+	}
+
+	email := payload.Claims["email"].(string)
+	name := payload.Claims["name"].(string)
+
+	var user models.User
+	// Tìm user bằng email hoặc táo mới. Password ở đây mình có thể hash tạm hoặc là b� qua, default google là google auth
+	if err := config.DB.Where("email = ?", email).First(&user).Error; err != nil {
+		// Tạo ngư�i dùng mơ�i nê�u không tìm thâ�y
+		user = models.User{
+			Username: name, // Bản chất tên đầy đủ Google
+			Email:    email,
+			Password: "GOOGLE_OAUTH_LOGIN", // Mnột chuỗi mã random mà bình thư�ng ai gõ pass cũng ko match dc m�t khẩu Hash // Th�t ra mình auto login mà ^^
+		}
+		config.DB.Create(&user)
+	}
+
+	// Trả v� user (KHÔNG trả password)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ăng nh�p Google thành công!",
+		"token":   "fake_jwt_token_for_" + user.Username, // Replace với true JWT token trên file Auth hệ thống
 		"user": gin.H{
 			"id":       user.ID,
 			"username": user.Username,
