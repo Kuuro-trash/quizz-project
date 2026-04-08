@@ -88,8 +88,8 @@
           </div>
         </div>
 
-        <div class="add-answer-wrapper" *ngIf="activeQuestion.answers.length < 4">
-            <button class="btn-add-ans-solid" (click)="addAnswer()">+ Add Answer</button>
+        <div class="add-answer-wrapper" [style.visibility]="activeQuestion.answers.length < 4 ? 'visible' : 'hidden'">
+            <button class="btn-add-ans-solid" (click)="addAnswer()" [disabled]="activeQuestion.answers.length >= 4">+ Add Answer</button>
         </div>
 
         <div class="settings-bottom">
