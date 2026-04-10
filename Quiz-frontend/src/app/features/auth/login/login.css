@@ -1,39 +1,53 @@
-/* Container ngoài cùng để căn giữa card và chống tràn */
-.auth-container {
+:host {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  min-height: calc(100vh - 80px); /* Tự động khớp với chiều cao màn hình trừ Navbar */
-  padding: 20px;
+  min-height: calc(100vh - 150px);
+  padding: 40px;
   background-color: #F9F5FF;
-  box-sizing: border-box;
 }
 
 .login-card {
   display: flex;
   width: 100%;
-  max-width: 1000px; /* Khống chế chiều rộng tối đa của card */
+  max-width: 1050px;
+  min-height: 650px;
   background: white;
-  border-radius: 32px;
+  border-radius: 40px;
   overflow: hidden;
-  box-shadow: 0 20px 50px rgba(112, 41, 255, 0.1);
+  box-shadow: 0 40px 100px rgba(112, 41, 255, 0.15);
 }
 
+/* --- BÊN TRÁI: BANNER --- */
 .login-left {
-  flex: 1;
-  background: #2D0B7A url('/Cube.png') no-repeat center;
+  flex: 1.1;
+  background: #2D0B7A url('/assets/images/3d-cube-bg.png') no-repeat center;
   background-size: cover;
-  padding: 40px;
+  padding: 60px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   color: white;
 }
 
+.login-left h1 {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.login-left p {
+  font-size: 16px;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* --- BÊN PHẢI: FORM --- */
 .login-right {
   flex: 1;
-  padding: 40px;
+  padding: 60px;
+  background: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -41,25 +55,124 @@
 
 .form-container {
   width: 100%;
-  max-width: 360px;
+  max-width: 400px;
   margin: 0 auto;
 }
 
-/* --- FORM COMPONENTS --- */
-.form-group { margin-bottom: 20px; }
-
-.label-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.form-container h2 {
+  font-size: 32px;
+  font-weight: 700;
   margin-bottom: 8px;
+  color: #101828;
 }
 
+.subtitle {
+  color: #667085;
+  font-size: 15px;
+  margin-bottom: 30px;
+}
+
+/* Nút Google */
+.btn-google {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #EAECF0;
+  background: #F4EBFF;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  transition: 0.3s;
+}
+
+.btn-google img { width: 20px; }
+
+/* Divider "OR WITH EMAIL" */
+.divider {
+  text-align: center;
+  margin: 30px 0;
+  position: relative;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  top: 50%; left: 0; width: 100%; height: 1px;
+  background: #EAECF0;
+}
+
+.divider span {
+  position: relative;
+  background: white;
+  padding: 0 15px;
+  font-size: 11px;
+  color: #98A2B3;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* Form Groups */
+.form-group { margin-bottom: 20px; }
+
 .form-group label {
+  display: block;
   font-size: 11px;
   font-weight: 800;
+  margin-bottom: 8px;
   color: #344054;
   letter-spacing: 0.5px;
+}
+
+/* Checkbox */
+.options-row {
+  margin: 15px 0;
+  font-size: 14px;
+  color: #344054;
+}
+
+/* Nút Sign In */
+.btn-signin {
+  width: 100%;
+  padding: 16px;
+  background: #6A1BFF;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  font-weight: 700;
+  font-size: 16px;
+  margin-top: 10px;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(106, 27, 255, 0.2);
+  transition: 0.3s;
+}
+
+.btn-signin:hover { background: #5514D6; }
+
+/* Footer Terms */
+.footer-terms {
+  margin-top: 30px;
+  font-size: 11px;
+  color: #98A2B3;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.footer-terms a {
+  color: #667085;
+  font-weight: 600;
+}
+
+/* Container bao quanh label và link */
+.label-row {
+  display: flex;
+  justify-content: space-between; /* Đẩy label sang trái, link sang phải */
+  align-items: center;
+  width: 100%;
+  margin-bottom: 8px;
 }
 
 .forgot-link {
@@ -69,75 +182,38 @@
   text-decoration: none;
 }
 
+/* Wrapper phải có relative để con mắt căn chỉnh theo nó */
 .input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
+}
+
+.icon-left {
+  position: absolute;
+  left: 15px;
+  color: #98A2B3;
+  pointer-events: none; /* Tránh việc click vào icon làm mất focus input */
+}
+
+/* Đây là phần bạn đang thiếu */
+.eye-icon {
+  position: absolute;
+  right: 15px; /* Cách lề phải 15px */
+  cursor: pointer;
+  color: #98A2B3;
+  z-index: 10;
+  padding: 5px; /* Tăng diện tích click */
 }
 
 .input-wrapper input {
   width: 100%;
-  padding: 12px 40px 12px 40px; /* Chừa chỗ cho icon trái và mắt phải */
+  padding: 14px 45px 14px 45px; /* Cách đều 45px 2 đầu để không đè lên icon */
   border: none;
   background: #F4EBFF;
-  border-radius: 10px;
-  outline: none;
-  font-size: 14px;
-}
-
-.field-icon { position: absolute; left: 12px; color: #98A2B3; font-size: 18px; }
-.eye-icon { position: absolute; right: 12px; color: #98A2B3; font-size: 18px; cursor: pointer; }
-
-/* --- SPACING & FOOTER --- */
-.options-row {
-  margin: 15px 0 25px 0; /* Đẩy khoảng cách giữa password và button */
-}
-
-.checkbox-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.checkbox-group label {
-  font-size: 13px;
-  color: #344054;
-  cursor: pointer;
-}
-
-.btn-primary-auth {
-  width: 100%;
-  padding: 14px;
-  background: #6A1BFF;
-  color: white;
-  border: none;
   border-radius: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.3s;
+  font-size: 15px;
+  box-sizing: border-box;
+  outline: none;
 }
-
-/* Riêng cho Register, dùng Gradient */
-.btn-register-gradient {
-  background: linear-gradient(90deg, #6A1BFF, #C00A82);
-}
-
-.footer-terms {
-  margin-top: 25px;
-  font-size: 11px;
-  color: #98A2B3;
-  text-align: center;
-  line-height: 1.5;
-}
-
-.footer-terms a { color: #667085; font-weight: 600; text-decoration: none; }
-
-/* Divider */
-.divider { text-align: center; margin: 20px 0; border-bottom: 1px solid #EAECF0; line-height: 0.1em; }
-.divider span { background: #fff; padding: 0 10px; color: #98A2B3; font-size: 10px; font-weight: 700; }
-
-.btn-google {
-  width: 100%; padding: 10px; border: 1px solid #EAECF0; background: #F4EBFF;
-  border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
-}
-.btn-google img { width: 18px; }

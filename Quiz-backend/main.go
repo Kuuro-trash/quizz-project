@@ -23,9 +23,7 @@ func main() {
 
 	// CAU HINH CORS CHO PHEP ANGULAR TAO REQUEST
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:4200"}, // Chi cho phep frontend ở localhost:4200
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		AllowAllOrigins:  true,
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
@@ -45,6 +43,8 @@ func main() {
 	api := r.Group("/api")
 	{
 		api.POST("/quizzes", controllers.CreateQuiz)
+		api.GET("/quizzes", controllers.GetQuizzes)
+		api.GET("/quizzes/:id", controllers.GetQuiz)
 	}
 
 	r.Run(":8080")

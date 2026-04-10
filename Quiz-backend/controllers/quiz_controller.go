@@ -1,95 +1,130 @@
-﻿package controllers
+package controllers
 
 import (
-"encoding/json"
-"net/http"
-"quiz-backend/config"
-"quiz-backend/models"
+	"encoding/json"
+	"net/http"
+	"quiz-backend/config"
+	"quiz-backend/models"
 
-"github.com/gin-gonic/gin"
-"github.com/google/uuid"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type CreateQuizInput struct {
-Title       string                `json:"title"`
-Description string                `json:"description"`
-Level       string                `json:"level"`
-Questions   []CreateQuestionInput `json:"questions"`
+	Title       string                `json:"title"`
+	Description string                `json:"description"`
+	Level       string                `json:"level"`
+	CoverImage  string                `json:"cover_image"`
+	UserID      string                `json:"user_id"` // Receive user_id from frontend since no token middleware
+	Questions   []CreateQuestionInput `json:"questions"`
 }
 
 type AnswerInput struct {
-Text      string `json:"text"`
-IsCorrect bool   `json:"is_correct"`
+	Text      string `json:"text"`
+	IsCorrect bool   `json:"is_correct"`
 }
 
 type CreateQuestionInput struct {
-Content         string        `json:"content"`
-TimeLimit       int           `json:"time_limit"`
-Points          int           `json:"points"`
-MultipleCorrect bool          `json:"multiple_correct"`
-Answers         []AnswerInput `json:"answers"`
+	Content         string        `json:"content"`
+	TimeLimit       int           `json:"time_limit"`
+	Points          int           `json:"points"`
+	MultipleCorrect bool          `json:"multiple_correct"`
+	Answers         []AnswerInput `json:"answers"`
 }
 
 func CreateQuiz(c *gin.Context) {
-var input CreateQuizInput
+	var input CreateQuizInput
 
-if err := c.ShouldBindJSON(&input); err != nil {
-c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body", "details": err.Error()})
-return
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body", "details": err.Error()})
+		return
+	}
+
+	if input.Title == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Title is required"})
+		return
+	}
+
+	var createdBy *uuid.UUID = nil
+	if input.UserID != "" {
+		parsedUUID, err := uuid.Parse(input.UserID)
+		if err == nil {
+			createdBy = &parsedUUID
+		}
+	}
+
+	tx := config.DB.Begin()
+
+	quiz := models.Quiz{
+		Title:       input.Title,
+		Description: input.Description,
+		Level:       input.Level,
+		CoverImage:  input.CoverImage,
+		CreatedBy:   createdBy,
+	}
+
+	if err := tx.Create(&quiz).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create quiz"})
+		return
+	}
+
+	var questions []models.Question
+	for _, qData := range input.Questions {
+		optionsJSON, err := json.Marshal(qData.Answers)
+		if err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not marshal answers"})
+			return
+		}
+
+		q := models.Question{
+			QuizID:          quiz.ID,
+			Content:         qData.Content,
+			TimeLimit:       qData.TimeLimit,
+			Points:          qData.Points,
+			MultipleCorrect: qData.MultipleCorrect,
+			Options:         string(optionsJSON),
+		}
+		questions = append(questions, q)
+	}
+
+	if len(questions) > 0 {
+		if err := tx.Create(&questions).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create questions", "details": err.Error()})
+			return
+		}
+	}
+
+	tx.Commit()
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Quiz created successfully",
+		"quiz":    quiz,
+	})
 }
 
-if input.Title == "" {
-c.JSON(http.StatusBadRequest, gin.H{"error": "Title is required"})
-return
+func GetQuizzes(c *gin.Context) {
+	var quizzes []models.Quiz
+	if err := config.DB.Preload("Creator").Preload("Questions").Order("created_at desc").Find(&quizzes).Error; err != nil {
+	}
+	c.JSON(http.StatusOK, quizzes)
 }
 
-var createdBy *uuid.UUID = nil // Optional user ID
+func GetQuiz(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID is required"})
+		return
+	}
 
-tx := config.DB.Begin()
+	var quiz models.Quiz
 
-quiz := models.Quiz{
-Title:     input.Title,
-CreatedBy: createdBy,
-}
+	if err := config.DB.Preload("Creator").Preload("Questions").First(&quiz, "id = ?", id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Quiz not found"})
+		return
+	}
 
-if err := tx.Create(&quiz).Error; err != nil {
-tx.Rollback()
-c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create quiz"})
-return
-}
-
-var questions []models.Question
-for _, qData := range input.Questions {
-optionsJSON, err := json.Marshal(qData.Answers)
-if err != nil {
-tx.Rollback()
-c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not marshal answers"})
-return
-}
-
-q := models.Question{
-QuizID:          quiz.ID,
-Content:         qData.Content,
-TimeLimit:       qData.TimeLimit,
-Points:          qData.Points,
-MultipleCorrect: qData.MultipleCorrect,
-Options:         string(optionsJSON),
-}
-questions = append(questions, q)
-}
-
-if len(questions) > 0 {
-if err := tx.Create(&questions).Error; err != nil {
-tx.Rollback()
-c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create questions", "details": err.Error()})
-return
-}
-}
-
-tx.Commit()
-
-c.JSON(http.StatusCreated, gin.H{
-"message": "Quiz created successfully",
-"quiz":    quiz,
-})
+	c.JSON(http.StatusOK, quiz)
 }

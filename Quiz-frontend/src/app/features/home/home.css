@@ -3,26 +3,29 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 150px);
+  min-height: calc(100vh - 150px); /* Đảm bảo nội dung luôn ở giữa màn hình */
   padding: 40px 0;
   background-color: #F9F5FF;
 }
 
+
 .welcome-section {
-  text-align: center;
+  text-align: center; /* Căn giữa toàn bộ nội dung trong section */
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+
 .text-welcome {
-  font-size: 110px;
+  font-size: 110px; /* Tăng lên bằng size của brand-title */
   font-weight: 800;
   color: #2D264B;
   margin: 0;
   line-height: 1.1;
   letter-spacing: -2px;
 }
+
 
 .text-brand {
   font-size: 110px;
@@ -34,14 +37,17 @@
   line-height: 1.1;
 }
 
+
 .sub-text {
   color: #667085;
   font-size: 18px;
-  margin: 10px auto 0 auto;
+  margin: 10px auto 0 auto; /* Căn giữa dòng mô tả */
   text-align: center;
   max-width: 500px;
 }
 
+
+/* Card nhập mã PIN */
 .pin-card {
   background: #FFFFFF;
   padding: 50px;
@@ -51,6 +57,7 @@
   position: relative;
   width: 550px;
 }
+
 
 .pin-badge {
   position: absolute;
@@ -65,6 +72,7 @@
   font-size: 12px;
 }
 
+
 .pin-input-group {
   display: flex;
   gap: 12px;
@@ -73,16 +81,24 @@
   border-radius: 20px;
   justify-content: center;
   align-items: center;
-  position: relative;
 }
 
-.hidden-pin-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: text; z-index: 10; letter-spacing: 50px; }
 
-.pin-field { background: transparent; border: none; text-align: center; font-size: 32px; font-weight: 700; color: #D0D5DD; display: flex; align-items: center; justify-content: center; transition: color 0.2s; width: 40px; }
+.pin-field {
+  width: 45px;
+  height: 55px;
+  background: transparent;
+  border: none;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #7029FF;
+  outline: none;
+}
 
-.pin-field:not(.placeholder) { color: #7029FF; }
 
-.pin-divider { width: 2px; height: 40px; background-color: #7029FF; margin: 0 10px; border-radius: 2px; }
+.pin-divider { width: 20px; }
+
 
 .btn-join {
   width: 100%;
@@ -98,7 +114,8 @@
   box-shadow: 0 10px 25px rgba(106, 27, 255, 0.3);
 }
 
+
 .bolt-icon {
-  filter: brightness(0) invert(1);
+  filter: brightness(0) invert(1); /* Ép icon sấm sét sang màu trắng */
   font-size: 22px;
 }

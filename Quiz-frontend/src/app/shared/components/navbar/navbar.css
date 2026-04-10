@@ -3,8 +3,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 80px;
-  background-color: #F9F5FF;
-  border-bottom: 1px solid rgba(112, 41, 255, 0.05);
+  background-color: #F9F5FF; /* Đổi từ trắng sang màu nền chung */
+  border-bottom: 1px solid rgba(112, 41, 255, 0.05); /* Đường kẻ mờ để phân cách nhẹ */
 }
 
 
@@ -12,38 +12,14 @@
   font-size: 24px;
   font-weight: 900;
   color: #7029FF;
-  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 
-/* Style cho phần text điều hướng Sign in / Sign up */
-.switch-text {
-  font-size: 15px;
-  color: #667085;
-  font-weight: 500;
-}
-
-
-.link-purple {
-  color: #7029FF;
-  text-decoration: none;
-  font-weight: 700;
-  margin-left: 5px;
-  transition: 0.2s;
-}
-
-
-.link-purple:hover {
-  text-decoration: underline;
-  color: #5514D6;
-}
-
-
-/* Giữ nguyên style cũ cho nút Home nếu cần */
 .auth-buttons {
   display: flex;
-  gap: 25px;
   align-items: center;
+  gap: 25px; /* Tạo khoảng cách giữa Sign In và Sign Up */
 }
 
 
@@ -51,6 +27,7 @@
   text-decoration: none;
   color: #7029FF;
   font-weight: 700;
+  font-size: 15px;
 }
 
 
@@ -61,72 +38,5 @@
   padding: 10px 24px;
   border-radius: 12px;
   font-weight: 700;
-}
-.nav-center {
-  display: flex;
-  gap: 32px;
-  align-items: center;
-}
-
-.nav-link {
-  text-decoration: none;
-  font-size: 16px;
-  font-weight: 500;
-  color: #475467;
-  padding: 8px 12px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-
-.nav-link:hover, .nav-link.active-link {
-  color: #7029FF;
-  background-color: #F4EBFF;
-  font-weight: 600;
-}
-
-.nav-right {
-  display: flex;
-  align-items: center;
-}
-
-.profile-menu {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 20px;
-  transition: background-color 0.2s;
-}
-
-.profile-menu:hover {
-  background-color: #F4EBFF;
-}
-
-.profile-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: #101828;
-}
-
-.avatar-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: #7029FF;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.drop-icon {
-  color: #667085;
-  font-size: 20px;
+  box-shadow: 0 4px 15px rgba(127, 86, 217, 0.3);
 }

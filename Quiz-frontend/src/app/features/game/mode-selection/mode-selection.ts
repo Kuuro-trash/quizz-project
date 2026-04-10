@@ -1,24 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-mode-selection',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [],
   templateUrl: './mode-selection.html',
-  styleUrls: ['./mode-selection.css']
+  styleUrl: './mode-selection.css',
 })
-export class ModeSelection implements OnInit {
-  quizTitle: string = 'Cybersecurity Fundamentals'; // Default title
-
-  constructor(private route: ActivatedRoute) {}
-
-  ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      if (params['title']) {
-        this.quizTitle = params['title'];
-      }
-    });
-  }
-}
+export class ModeSelection {}
