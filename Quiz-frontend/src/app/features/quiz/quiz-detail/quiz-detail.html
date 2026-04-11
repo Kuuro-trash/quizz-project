@@ -1,1 +1,120 @@
-<p>quiz-detail works!</p>
+<div class="quiz-detail-page">
+  <div class="container-grid">
+
+    <div>
+      <div class="hero-card" [ngClass]="isOwner ? 'hero-owner' : 'hero-guest'">
+        <div class="image-box">
+          <img [src]="isOwner ? quizData.imageUser : quizData.imageGuest" class="hero-img">
+        </div>
+
+        <span class="badge-expert">{{ quizData.level | uppercase }}</span>
+
+        <div class="hero-content">
+          <span class="text-featured">FEATURED QUIZ</span>
+          <h1 class="main-title">{{ quizData.title }}</h1>
+
+          <div class="stats-bar">
+            <div class="stat-item"><i class="pi pi-play-circle"></i> {{ quizData.plays }}</div>
+            <div class="stat-item"><i class="pi pi-list"></i> {{ quizData.questionsCount }}</div>
+            <div class="stat-item"><i class="pi pi-clock"></i> {{ quizData.duration }} avg</div>
+          </div>
+
+          @if (!isOwner) {
+            <div class="hero-actions">
+              <button type="button" class="btn-start-game" (click)="goToSelectMode()">
+                <i class="pi pi-play"></i> START GAME
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+
+      @if (isOwner) {
+        <div class="visibility-section">
+          <div class="section-title">👁 Manage Visibility</div>
+          <div class="visibility-grid">
+            <button type="button" class="v-card active">
+              <div class="v-icon"><i class="pi pi-globe"></i></div>
+              <strong>Public</strong>
+              <div>Visible to everyone</div>
+            </button>
+
+            <button type="button" class="v-card">
+              <div class="v-icon"><i class="pi pi-link"></i></div>
+              <strong>Private</strong>
+              <div>Link access</div>
+            </button>
+
+            <button type="button" class="v-card">
+              <div class="v-icon"><i class="pi pi-user"></i></div>
+              <strong>Only Me</strong>
+              <div>Draft mode</div>
+            </button>
+          </div>
+        </div>
+      }
+
+      <div class="preview-header">
+        <h2>Question Preview</h2>
+        <span>{{ quizData.questionsCount }} total questions</span>
+      </div>
+
+      <div class="questions-list">
+        @for (q of questions; track q.id) {
+          <button type="button" class="q-row">
+            <div class="q-idx">{{ q.id }}</div>
+            <div class="q-body">
+              <div class="q-tags">
+                <span class="tag-purple">{{ q.type }}</span>
+                <span class="tag-gray">⏱ {{ q.time }}</span>
+                <span class="tag-gray">{{ q.points }} pts</span>
+              </div>
+              <div class="q-text">{{ q.text }}</div>
+            </div>
+            <i class="pi pi-chevron-down"></i>
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="sidebar">
+      @if (isOwner) {
+        <button type="button" class="btn-host-gradient">▶ HOST GAME</button>
+      }
+
+      <div class="side-card purple">
+        <div class="side-label">QUICK ACTIONS</div>
+
+        @if (isOwner) {
+          <button type="button" class="action-item">
+            <i class="pi pi-pencil"></i> Edit Quiz
+          </button>
+        }
+
+        <button type="button" class="action-item">
+          <i class="pi pi-share-alt"></i> Share Quiz
+        </button>
+
+        @if (isOwner) {
+          <button type="button" class="action-item delete">
+            <i class="pi pi-trash"></i> Delete Quiz
+          </button>
+        }
+      </div>
+
+      <div class="side-card white">
+        <h3>Quiz Details</h3>
+        <div class="detail-row">
+          <span class="label">Author</span>
+          <span class="value">{{ quizData.author }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Last Updated</span>
+          <span class="value">{{ quizData.lastUpdated }}</span>
+        </div>
+        <p class="desc-text">{{ quizData.description }}</p>
+      </div>
+    </div>
+
+  </div>
+</div>

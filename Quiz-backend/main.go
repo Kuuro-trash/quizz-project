@@ -23,10 +23,11 @@ func main() {
 
 	// CAU HINH CORS CHO PHEP ANGULAR TAO REQUEST
 	r.Use(cors.New(cors.Config{
-		AllowAllOrigins:  true,
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
+		AllowAllOrigins: true,
+		AllowMethods:    []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:    []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:   []string{"Content-Length"},
+		MaxAge:          12 * time.Hour,
 	}))
 
 	config.ConnectDatabase()
