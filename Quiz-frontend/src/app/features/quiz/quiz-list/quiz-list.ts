@@ -12,6 +12,7 @@ interface Quiz {
   plays: string;
   level: string;
   image: string;
+  description: string;
 }
 
 @Component({
@@ -57,10 +58,11 @@ export class QuizList implements OnInit, OnDestroy {
         const apiQuizzes = res.map(q => ({
           id: q.id,
           title: q.title,
+          description: q.description || 'Test your knowledge on this topic.',
           author: q.creator ? q.creator.username : 'Unknown Author',
           items: q.questions ? q.questions.length : 0,
-          plays: '0', // Chưa có API đếm play
-          level: q.level || 'Easy',
+          plays: String(q.plays || 0),
+          level: q.level || 'Mid',
           image: q.cover_image && q.cover_image.startsWith('data:image') ? q.cover_image : '/Tech.png' // Fallback nếu ko có
         }));
 

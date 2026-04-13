@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+﻿import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,9 +12,37 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
   username: string = 'Alex Rivera';
   joinPin: string = '';
+  quizzes: any[] = [];
+
+  constructor(private http: HttpClient, private cd: ChangeDetectorRef) {}
+
+  async ngOnInit() {
+    try {
+      // Get all quizzes
+      const res: any = await firstValueFrom(
+        this.http.get('http://localhost:8080/api/quizzes')
+      );
+      
+      // ChÆ°a cÃ³ Creator thÃ¬ cá»© filter nhá»¯ng quiz má»›i nháº¥t (Top 4)
+      if (res && Array.isArray(res)) {
+        this.quizzes = res.slice(0, 4).map(q => {
+          const plays = q.plays || 0;
+          return {
+            id: q.id,
+            title: q.title,
+            stats: `${plays} Plays - ` + (q.questions ? q.questions.length : 0) + ' Questions',
+            img: q.cover_image || '/Cyber.png'
+          };
+        });
+        this.cd.detectChanges();
+      }
+    } catch (error) {
+      console.error('Lá»—i fetch', error);
+    }
+  }
 
   onPinInput(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -20,36 +50,7 @@ export class Dashboard {
     this.joinPin = input.value;
   }
 
-  // Mảng dữ liệu cho 4 Quiz Recommended
-  quizzes = [
-    {
-      id: 1,
-      title: 'World Geography Challenge',
-      stats: '1.2k Plays • 15 Questions',
-      img: '/Geography.png' // Đảm bảo đường dẫn này đúng với thư mục assets của bạn
-    },
-    {
-      id: 2,
-      title: 'Arts and Music',
-      stats: '850 Plays • 10 Questions',
-      img: '/Arts.png'
-    },
-    {
-      id: 3,
-      title: 'Who is a millionaire?',
-      stats: '3.4k Plays • 12 Questions',
-      img: '/Money.png'
-    },
-    {
-      id: 4,
-      title: 'Who is smarter than the fifth grade?',
-      stats: '2.1k Plays • 20 Questions',
-      img: '/School.png'
-    }
-  ];
-
-  // Hàm bổ trợ nếu bạn vẫn muốn dùng logic cũ nhưng trả về ảnh theo đối tượng
   getQuizImg(quiz: any): string {
-    return quiz.img;
+    return quiz.img || '/Cyber.png';
   }
 }

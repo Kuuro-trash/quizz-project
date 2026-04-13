@@ -1,1 +1,13 @@
-<p>multi-lobby works!</p>
+<div class="lobby-container">
+  <h1>Lobby Phòng Chờ Multiplayer 🎮</h1>
+  <p>Bạn đang ở phòng: <strong>{{ roomId }}</strong> với tên <strong>{{ myUserId }}</strong></p>
+
+  <button (click)="sendChat()" class="btn-chat">Test: Gửi một tin nhắn Chat vào phòng</button>
+
+  <div class="console-box" *ngIf="messages.length">
+    <h3>Sự kiện mới nhất trong kênh:</h3>
+    <ul class="event-logs">
+      <li *ngFor="let message of messages">{{ message }}</li>
+    </ul>
+  </div>
+</div>

@@ -163,7 +163,7 @@ export class CreateQuiz {
 
   saveQuiz() {
     if (!this.quizTitle.trim()) {
-      alert('Vui l�ng nh?p t�n Quiz');
+      alert('Vui lòng nhập tên Quiz');
       return;
     }
 
@@ -171,7 +171,7 @@ export class CreateQuiz {
     for (let i = 0; i < this.questions.length; i++) {
         const q = this.questions[i];
         if (!q.text.trim()) {
-            alert(`C�u h?i ${i + 1} kh�ng du?c d? tr?ng`);
+            alert(`Câu hỏi ${i + 1} không được để trống`);
             return;
         }
     }
@@ -214,7 +214,7 @@ export class CreateQuiz {
       },
       error: (err) => {
         console.error(err);
-        alert('C� l?i x?y ra khi t?o Quiz: ' + (err.error?.message || err.message));
+        alert('Có lỗi xảy ra khi tạo Quiz: ' + (err.error?.message || err.message));
       }
     });
 

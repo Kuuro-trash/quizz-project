@@ -23,7 +23,7 @@
             <label>EMAIL ADDRESS</label>
             <div class="input-wrapper">
               <span class="material-icons field-icon">mail_outline</span>
-              <input type="email" name="email" [(ngModel)]="email" placeholder="hello@example.com" autocomplete="off" required>
+              <input type="email" name="email" [(ngModel)]="email" placeholder="hello@example.com" autocomplete="off" required (keydown.enter)="onLogin()">
             </div>
           </div>
 
@@ -35,7 +35,7 @@
             <div class="input-wrapper">
               <span class="material-icons field-icon">lock_outline</span>
               <!-- CSS text security trick replaces standard password functionality, tricking Chromium browsers -->
-              <input type="text" [style.-webkit-text-security]="passwordVisible ? 'none' : 'disc'" class="password-input-bypass" name="password" [(ngModel)]="password" placeholder="••••••••" autocomplete="off" required>
+              <input type="text" [style.-webkit-text-security]="passwordVisible ? 'none' : 'disc'" class="password-input-bypass" name="password" [(ngModel)]="password" placeholder="••••••••" autocomplete="off" required (keydown.enter)="onLogin()">
               <span class="material-icons eye-icon" (click)="togglePassword()">
                 {{ passwordVisible ? 'visibility' : 'visibility_off' }}
               </span>

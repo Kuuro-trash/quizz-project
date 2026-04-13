@@ -75,7 +75,7 @@
               <div class="s-box"><span class="v">{{ quiz.plays }}</span><span class="l">Plays</span></div>
               <div class="s-box"><span class="v">{{ quiz.level }}</span><span class="l">Level</span></div>
             </div>
-            <button class="btn-play-gradient" [routerLink]="['/play/mode']" [queryParams]="{ title: quiz.title }">Start Quiz <span class="material-icons">play_arrow</span></button>
+            <button class="btn-play-gradient" [routerLink]="['/play/mode']" [queryParams]="{ id: quiz.id, title: quiz.title, desc: quiz.description, level: quiz.level, length: quiz.items }">Start Quiz <span class="material-icons">play_arrow</span></button>
           </div>
         </div>
 

@@ -278,3 +278,50 @@
 .label { color: #6B7280; font-size: 13px; }
 .value { font-weight: 800; font-size: 13px; }
 .desc-text { margin-top: 12px; font-size: 13px; color: #6B7280; line-height: 1.5; }
+.q-wrapper {
+  background: white;
+  margin-bottom: 12px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+.q-row {
+  margin-bottom: 0;
+  box-shadow: none;
+  background: transparent;
+}
+.q-answers {
+  padding: 0 20px 20px 75px;
+  background: white;
+  border-top: 1px dashed #f0edf7;
+  animation: slideDown 0.3s ease-out;
+}
+.q-answers ul {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0 0 0;
+}
+.q-answers li {
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  background: #f9f9f9;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #555;
+  transition: all 0.2s;
+}
+.q-answers li i {
+  font-size: 1.1rem;
+}
+.q-answers li.correct {
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-weight: 600;
+  border: 1px solid #c8e6c9;
+}
+.q-answers li.correct i {
+  color: #4caf50;
+}

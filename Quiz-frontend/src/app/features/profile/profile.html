@@ -7,7 +7,7 @@
       <!-- Khung trái: Avatar -->
       <div class="avatar-column">
         <div class="avatar-wrap">
-          <img src="/User.png" alt="Avatar">
+          <img [src]="user.avatar" alt="Avatar">
           <div class="verified-badge"><span class="material-icons">check_circle</span></div>
         </div>
       </div>
@@ -117,7 +117,7 @@
         <h2 class="sub-section-title">Quick Actions</h2>
        
         <div class="actions-vertical-stack">
-          <button class="action-btn-primary" routerLink="/app/profile-edit">
+          <button class="action-btn-primary" routerLink="/app/profile/edit">
             <span class="material-icons">edit_square</span> Edit Profile
             <span class="material-icons chevron">chevron_right</span>
           </button>

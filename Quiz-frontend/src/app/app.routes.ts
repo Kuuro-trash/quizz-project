@@ -14,6 +14,7 @@ import { Register } from './features/auth/register/register';
 import { Dashboard } from './features/dashboard/dashboard';
 import { Leaderboard } from './features/leaderboard/leaderboard';
 import { Profile } from './features/profile/profile';
+import { ProfileEdit } from './features/profile-edit/profile-edit';
 
 // Features - Quiz
 import { QuizList } from './features/quiz/quiz-list/quiz-list';
@@ -25,6 +26,10 @@ import { GameRoom } from './features/game/multi/game-room/game-room';
 import { MultiLobby } from './features/game/multi/multi-lobby/multi-lobby';
 import { ModeSelection } from './features/game/mode-selection/mode-selection';
 import { Result } from './features/game/result/result';
+
+// Features - Solo Play
+import { SoloLobby } from './features/game/solo/solo-lobby/solo-lobby';
+import { GameRoomComponent as SoloGameRoom } from './features/game/solo/game-room/game-room';
 
 export const routes: Routes = [
   // Nhóm 1: Các trang không có Header phức tạp (Sử dụng AuthLayout)
@@ -47,8 +52,9 @@ export const routes: Routes = [
       { path: 'quizzes', component: QuizList },
       { path: 'create-quiz', component: CreateQuiz },
       { path: 'quiz-detail/:id', component: QuizDetail },
-      { path: 'leaderboard', component: Leaderboard }, // Sửa lỗi nút Leaderboard
-      { path: 'profile', component: Profile },         // Sửa lỗi nút Profile
+      { path: 'leaderboard', component: Leaderboard },
+      { path: 'profile', component: Profile },
+      { path: 'profile/edit', component: ProfileEdit },
     ]
   },
 
@@ -61,6 +67,10 @@ export const routes: Routes = [
       { path: 'lobby', component: MultiLobby },
       { path: 'room', component: GameRoom },
       { path: 'result', component: Result },
+      
+      // Khai báo route cho Solo Mode
+      { path: 'solo/lobby', component: SoloLobby },
+      { path: 'solo/room', component: SoloGameRoom },
     ]
   },
 

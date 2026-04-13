@@ -5,6 +5,7 @@ import (
 	"quiz-backend/config"
 	"quiz-backend/controllers"
 	"quiz-backend/models"
+	"quiz-backend/sockets"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -19,9 +20,12 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
+	// Khởi tạo WebSocket Hub
+	hub := sockets.NewHub()
+	go hub.Run()
+
 	r := gin.Default()
 
-	// CAU HINH CORS CHO PHEP ANGULAR TAO REQUEST
 	r.Use(cors.New(cors.Config{
 		AllowAllOrigins: true,
 		AllowMethods:    []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
@@ -32,20 +36,28 @@ func main() {
 
 	config.ConnectDatabase()
 	// Tu dong tao bang
-	config.DB.AutoMigrate(&models.User{}, &models.Quiz{}, &models.Question{})
+	config.DB.AutoMigrate(&models.User{}, &models.Quiz{}, &models.Question{}, &models.Result{})
 
 	auth := r.Group("/auth")
 	{
 		auth.POST("/register", controllers.Register)
 		auth.POST("/login", controllers.Login)
 		auth.POST("/google", controllers.GoogleLogin)
+		auth.PATCH("/profile", controllers.UpdateProfile)
 	}
 
 	api := r.Group("/api")
 	{
+		api.GET("/ws", func(c *gin.Context) {
+			sockets.ServeWs(hub, c)
+		})
+
 		api.POST("/quizzes", controllers.CreateQuiz)
 		api.GET("/quizzes", controllers.GetQuizzes)
 		api.GET("/quizzes/:id", controllers.GetQuiz)
+		api.DELETE("/quizzes/:id", controllers.DeleteQuiz)
+		api.PATCH("/quizzes/:id/visibility", controllers.UpdateQuizVisibility)
+		api.POST("/results", controllers.SubmitResult)
 	}
 
 	r.Run(":8080")

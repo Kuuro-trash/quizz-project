@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router';
 export class Navbar implements OnInit {
   @Input() type: 'auth' | 'home' | 'profile' | 'game' | 'auth-signin' | 'auth-signup' | 'dashboard' = 'home';
   username: string = 'Alex Rivera';
+  avatar: string = '/User.png';
 
   ngOnInit() {
     const storedUser = localStorage.getItem('user');
@@ -22,6 +23,10 @@ export class Navbar implements OnInit {
           this.username = user.user_name;
         } else if (user && user.username) {
           this.username = user.username;
+        }
+        
+        if (user && user.avatar) {
+          this.avatar = user.avatar;
         }
       } catch (e) {
         console.error('Error parsing user', e);

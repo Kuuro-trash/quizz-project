@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -14,7 +14,7 @@ import { firstValueFrom } from 'rxjs';
 export class QuizDetail implements OnInit {
   @Input() isOwner: boolean = false;
 
-  constructor(private router: Router, private route: ActivatedRoute, private http: HttpClient) {}
+  constructor(private router: Router, private route: ActivatedRoute, private http: HttpClient, private cd: ChangeDetectorRef) {}
 
   quizData: any = {
     id: 0,
@@ -23,6 +23,7 @@ export class QuizDetail implements OnInit {
     questionsCount: 0,
     duration: '0 min',
     level: 'Unknown',
+    visibility: 'public',
     engagementRate: 0,
     lastUpdated: '-',
     author: 'JUST4QUIZ',
@@ -122,10 +123,10 @@ export class QuizDetail implements OnInit {
     }
   ];
 
-  questions = [
-    { id: 1, type: 'MULTIPLE CHOICE', points: 100, time: '30s', text: 'Which of the following is correct?' },
-    { id: 2, type: 'TRUE / FALSE', points: 50, time: '20s', text: 'An answer to this question usually spans across true or false.' },
-    { id: 3, type: 'MULTIPLE CHOICE', points: 200, time: '45s', text: 'Another tricky question for you to solve.' }
+  questions: any[] = [
+    { id: 1, type: 'MULTIPLE CHOICE', points: 100, time: '30s', text: 'Which of the following is correct?', expanded: false, answers: [] },
+    { id: 2, type: 'TRUE / FALSE', points: 50, time: '20s', text: 'An answer to this question usually spans across true or false.', expanded: false, answers: [] },
+    { id: 3, type: 'MULTIPLE CHOICE', points: 200, time: '45s', text: 'Another tricky question for you to solve.', expanded: false, answers: [] }
   ];
 
   ngOnInit(): void {
@@ -147,12 +148,36 @@ export class QuizDetail implements OnInit {
             if (res.questions && res.questions.length > 0) {
               res.questions.forEach((q: any, i: number) => {
                 totalSeconds += q.time_limit;
+
+                // parse answers tá»« q.options
+                let parsedAnswers: any[] = [];
+                if (q.options) {
+                  try {
+                    parsedAnswers = typeof q.options === 'string' ? JSON.parse(q.options) : q.options;
+                  } catch (e) {
+                    console.error("LÃ´i parse answers", e);
+                  }
+                }
+
+                // Xác định loại câu hỏi theo logic số lượng đáp án
+                let questionType = 'SINGLE CHOICE';
+                const correctCount = parsedAnswers.filter(a => a.is_correct).length;
+                if (parsedAnswers.length === 2) {
+                  questionType = 'TRUE / FALSE';
+                } else if (parsedAnswers.length >= 4 && correctCount >= 2) {
+                  questionType = 'MULTIPLE CHOICE';
+                } else {
+                  questionType = 'SINGLE CHOICE';
+                }
+
                 mappedQuestions.push({
                   id: i + 1,
-                  type: q.multiple_correct ? 'MULTIPLE CHOICE' : 'SINGLE CHOICE',
+                  type: questionType,
                   points: q.points,
                   time: q.time_limit + 's',
-                  text: q.content
+                  text: q.content,
+                  answers: parsedAnswers,
+                  expanded: false
                 });
               });
             }
@@ -173,20 +198,37 @@ export class QuizDetail implements OnInit {
             // Lấy tên Author
             const authorName = res.creator && res.creator.username ? res.creator.username : 'Anonymous';
 
+            // Kiá»ƒm tra Owner logic mÃ¡Â»â€ºi 
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                try {
+                    const parsedUser = JSON.parse(storedUser);
+                    if (parsedUser && parsedUser.id) {
+                      const userId = String(parsedUser.id).toLowerCase();
+                      const createdById = res.created_by ? String(res.created_by).toLowerCase() : '';
+                      const creatorId = (res.creator && res.creator.id) ? String(res.creator.id).toLowerCase() : '';
+                      this.isOwner = (createdById === userId) || (creatorId === userId);
+                    }
+                } catch(e) {}
+            }
+
+            // Gán giá trị thẳng từ server (không tự động tính toán Level nữa)
             this.quizData = {
               id: res.id,
               title: res.title,
-              plays: '0', 
+              plays: res.plays !== undefined && res.plays !== null ? res.plays.toString() : '0', 
               questionsCount: this.questions.length,
               duration: durationStr.trim(),
               level: res.level || 'Mid',
+              visibility: res.visibility || 'public',
               engagementRate: 0,
               lastUpdated: dateStr,
               author: authorName,
               description: res.description || 'No description available for this quiz.',
-              imageUser: '/Cyber.png', // Default cover for DB quizzes
-              imageGuest: '/Cyber.png'
+              imageUser: res.cover_image || '/Cyber.png', 
+              imageGuest: res.cover_image || '/Cyber.png'
             };
+            this.cd.detectChanges();
           }
           return; // Dừng việc tải mock code
         } catch (error) {
@@ -206,15 +248,73 @@ export class QuizDetail implements OnInit {
         this.quizData = {
           title: 'Mastering Cyber Security 2024',
           plays: '12.4k', questionsCount: 25, duration: '15 min',
-          level: 'Pro', lastUpdated: 'Oct 24, 2023', author: 'JUST4QUIZ',
+          level: 'Pro', visibility: 'public', lastUpdated: 'Oct 24, 2023', author: 'JUST4QUIZ',
           description: 'A comprehensive deep-dive into modern cybersecurity threats, defense mechanisms.',
           imageUser: '/Cyber security concept.png', imageGuest: '/Cyber Security Theme.png'
         };
       }
+      this.cd.detectChanges();
     });
   }
 
   goToSelectMode() {
-    this.router.navigate(['/play/mode'], { queryParams: { title: this.quizData.title } });
+    // Đảm bảo lấy đúng các trường cho dù là quiz lấy từ backend hay từ mock
+    const lengthToPass = this.quizData.questionsCount || this.questions.length || 0;
+    const levelToPass = this.quizData.level || 'Mid';
+    const descToPass = this.quizData.description || 'Test your defense mechanisms against modern threats.';
+
+    this.router.navigate(['/play/mode'], { 
+      queryParams: { 
+        id: this.quizData.id,
+        title: this.quizData.title,
+        desc: descToPass,
+        level: levelToPass,
+        length: lengthToPass
+      } 
+    });
+  }
+
+  async setVisibility(status: string) {
+    this.quizData.visibility = status;
+    this.cd.detectChanges();
+    
+    if (this.quizData && this.quizData.id && String(this.quizData.id).includes('-')) {
+      try {
+        await firstValueFrom(
+          this.http.patch(`http://localhost:8080/api/quizzes/${this.quizData.id}/visibility`, {
+            visibility: status
+          })
+        );
+      } catch (e) {
+        console.error('Failed to update visibility', e);
+      }
+    }
+  }
+
+  async deleteQuiz() {
+    if (!this.isOwner) return;
+    
+    const confirmDelete = confirm('Are you sure you want to delete this quiz? This action cannot be undone.');
+    if (!confirmDelete) return;
+
+    if (this.quizData && this.quizData.id && String(this.quizData.id).includes('-')) {
+      try {
+        await firstValueFrom(
+          this.http.delete(`http://localhost:8080/api/quizzes/${this.quizData.id}`)
+        );
+        alert('Quiz deleted successfully');
+        this.router.navigate(['/app/quizzes']);
+      } catch (e) {
+        console.error('Failed to delete quiz', e);
+        alert('Failed to delete quiz');
+      }
+    } else {
+      alert('Mock quiz deleted locally');
+      this.router.navigate(['/app/quizzes']);
+    }
+  }
+
+  getShareLink(): string {
+    return window.location.href; 
   }
 }

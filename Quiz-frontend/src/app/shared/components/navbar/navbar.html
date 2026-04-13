@@ -31,7 +31,7 @@
     <div class="profile-menu" *ngIf="type === 'profile' || type === 'dashboard'" routerLink="/app/profile">
       <span class="profile-name">{{ username }}</span>
       <div class="avatar-circle">
-        <img src="/User.png" alt="Avatar" class="avatar-img" onerror="this.src='https://via.placeholder.com/36?text=U'">
+        <img [src]="avatar || '/User.png'" alt="Avatar" class="avatar-img" onerror="this.src='https://via.placeholder.com/36?text=U'">
       </div>
       <span class="material-icons drop-icon">expand_more</span>
     </div>

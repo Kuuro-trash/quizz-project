@@ -58,6 +58,8 @@ func Register(c *gin.Context) {
 			"id":       input.ID,
 			"username": input.Username,
 			"email":    input.Email,
+			"avatar":   input.Avatar,
+			"bio":      input.Bio,
 		},
 	})
 }
@@ -102,6 +104,8 @@ func Login(c *gin.Context) {
 			"id":       user.ID,
 			"username": user.Username,
 			"email":    user.Email,
+			"avatar":   user.Avatar,
+			"bio":      user.Bio,
 		},
 	})
 }
@@ -148,7 +152,44 @@ func GoogleLogin(c *gin.Context) {
 		"user": gin.H{
 			"id":       user.ID,
 			"username": user.Username,
-			"email":    user.Email,
-		},
+			"email":    user.Email, "avatar": user.Avatar,
+			"bio": user.Bio},
+	})
+}
+
+type UpdateProfileInput struct {
+	UserID string `json:"user_id"`
+	Avatar string `json:"avatar"`
+	Bio    string `json:"bio"`
+}
+
+func UpdateProfile(c *gin.Context) {
+	var input UpdateProfileInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var user models.User
+	if err := config.DB.First(&user, "id = ?", input.UserID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	if input.Avatar != "" {
+		user.Avatar = &input.Avatar
+	}
+	if input.Bio != "" {
+		user.Bio = &input.Bio
+	}
+
+	if err := config.DB.Save(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not update profile"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Profile updated successfully",
+		"user":    user,
 	})
 }
