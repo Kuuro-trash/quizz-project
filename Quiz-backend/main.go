@@ -58,6 +58,8 @@ func main() {
 		api.DELETE("/quizzes/:id", controllers.DeleteQuiz)
 		api.PATCH("/quizzes/:id/visibility", controllers.UpdateQuizVisibility)
 		api.POST("/results", controllers.SubmitResult)
+		api.GET("/stats/:id", controllers.GetUserStats)
+		api.GET("/users/:id/history", controllers.GetUserHistory)
 	}
 
 	r.Run(":8080")

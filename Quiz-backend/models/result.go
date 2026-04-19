@@ -16,4 +16,6 @@ type Result struct {
 	CorrectAnswers int        `gorm:"default:0"`
 	PlayCount      int        `gorm:"default:1"`
 	CreatedAt      time.Time  `gorm:"autoCreateTime"`
+
+	Quiz *Quiz `json:"quiz" gorm:"foreignKey:QuizID;references:ID"`
 }

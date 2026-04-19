@@ -134,6 +134,12 @@ input, textarea {
   box-sizing: border-box;
 }
 
+textarea {
+  resize: vertical;
+  min-height: 80px;
+  max-height: 300px;
+}
+
 
 input:focus, textarea:focus {
   border-color: #D6BBFB;
@@ -166,13 +172,18 @@ input:focus, textarea:focus {
 
 .btn-cancel {
   padding: 12px 40px;
-  background: white;
-  border: 1.5px solid #D6BBFB;
+  background: #9166FF;
+  border: none;
   border-radius: 100px;
-  color: #7029FF;
+  color: white;
   font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 4px 14px rgba(112, 41, 255, 0.3);
   transition: 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #7029FF;
 }
 
 
