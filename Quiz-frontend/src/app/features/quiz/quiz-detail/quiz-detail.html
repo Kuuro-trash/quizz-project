@@ -12,9 +12,8 @@
            
             <div class="stats-bar" style="flex-wrap: wrap;">
               <span class="stat-item"><i class="pi pi-play-circle"></i> {{ quizData.plays }} Plays</span>
-              <span class="stat-item"><i class="pi pi-users"></i> {{ quizData.hosts }} Hosts</span>
               <span class="stat-item"><i class="pi pi-comment"></i> {{ quizData.comments }} Comments</span>
-              <span class="stat-item" style="color: #f1ad1d;"><i class="pi pi-star-fill"></i> {{ quizData.rating }} Rating</span>
+              <span class="stat-item"><i class="pi pi-star-fill"></i> {{ quizData.rating }} Rating</span>
               <span class="stat-item"><i class="pi pi-list"></i> {{ quizData.questionsCount }} Questions</span>
               <span class="stat-item"><i class="pi pi-clock"></i> {{ quizData.duration }} Avg.</span>
               <span class="stat-item"><i class="pi pi-trophy"></i> {{ quizData.level }}</span>
@@ -86,9 +85,8 @@
               <h1 class="guest-main-title">{{ quizData.title }}</h1>
               <div class="guest-stats-row" style="flex-wrap: wrap;">
                 <span class="g-stat"><i class="pi pi-play"></i> {{ quizData.plays }} Plays</span>
-                <span class="g-stat"><i class="pi pi-users"></i> {{ quizData.hosts }} Hosts</span>
                 <span class="g-stat"><i class="pi pi-comment"></i> {{ quizData.comments }} Comments</span>
-                <span class="g-stat" style="color: #f1ad1d;"><i class="pi pi-star-fill"></i> {{ quizData.rating }} Rating</span>
+                <span class="g-stat"><i class="pi pi-star-fill"></i> {{ quizData.rating }} Rating</span>
                 <span class="g-stat"><i class="pi pi-list"></i> {{ quizData.questionsCount }} Qs</span>
                 <span class="g-stat"><i class="pi pi-clock"></i> {{ quizData.duration }}</span>
               </div>
@@ -197,10 +195,6 @@
             <button class="action-item" (click)="shareQuiz()">
               <i class="pi pi-share-alt" style="color: #64748b;"></i>
               <span>Share Quiz</span>
-            </button>
-            <button class="action-item" [routerLink]="['/app/review', quizId]">
-              <i class="pi pi-star" style="color: #64748b;"></i>
-              <span>Review</span>
             </button>
           </div>
         </div>
