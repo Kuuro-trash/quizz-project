@@ -25,7 +25,6 @@ export class Result implements OnInit {
     correctAnswers: 0,
     totalQuestions: 0,
     bestStreak: 0,
-    masteryInsight: 'You excelled in the Logic & Patterns section with a 100% accuracy rate. Your speed was 15% faster than the global average.',
     imageSummary: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=400&q=80'
   };
 

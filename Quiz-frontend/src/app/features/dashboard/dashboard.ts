@@ -26,21 +26,28 @@ export class Dashboard implements OnInit {
         this.http.get('http://localhost:8080/api/quizzes')
       );
       
-      // ChÆ°a cÃ³ Creator thÃ¬ cá»© filter nhá»¯ng quiz má»›i nháº¥t (Top 4)
       if (res && Array.isArray(res)) {
-        this.quizzes = res.slice(0, 4).map(q => {
+        // Chỉ hiển thị các quiz của Admin dựa vào email (ổn định hơn username vì username có thể thay đổi)
+        const adminQuizzes = res.filter(q => q.creator && q.creator.email === 'just4quiz@gmail.com');
+
+        // Lấy tối đa 4 quiz
+        this.quizzes = adminQuizzes.slice(0, 4).map(q => {
           const plays = q.plays || 0;
           return {
             id: q.id || q.ID,
             title: q.title,
             stats: `${plays} Plays - ` + (q.questions ? q.questions.length : 0) + ' Questions',
-            img: q.cover_image || '/Cyber.png'
+            plays: plays,
+            hosts: q.hosts || 0,
+            comments: q.comments || 0,
+            rating: 5.0,
+            img: q.cover_image && q.cover_image.startsWith('data:image') ? q.cover_image : '/Cyber.png'
           };
         });
         this.cd.detectChanges();
       }
     } catch (error) {
-      console.error('Lá»—i fetch', error);
+      console.error('Lỗi khi tải dữ liệu', error);
     }
   }
 

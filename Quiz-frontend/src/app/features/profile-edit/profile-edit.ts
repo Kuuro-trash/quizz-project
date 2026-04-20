@@ -73,6 +73,7 @@ export class ProfileEdit implements OnInit {
           await firstValueFrom(
             this.http.patch('http://localhost:8080/auth/profile', {
               user_id: this.user.id,
+              username: this.user.username,
               avatar: this.user.avatar,
               bio: this.user.bio
             })
