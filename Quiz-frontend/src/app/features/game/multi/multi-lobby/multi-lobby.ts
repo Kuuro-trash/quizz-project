@@ -107,6 +107,6 @@ export class MultiLobby implements OnInit {
 
 
   leaveRoom(): void {
-    this.router.navigate(['/play/multi/mode']);
+    this.router.navigate(['/play/multi/mode'], { queryParamsHandling: 'preserve' });
   }
 }
