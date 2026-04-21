@@ -1,4 +1,4 @@
-﻿package main
+package main
 
 import (
 	"log"
@@ -20,7 +20,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	// Khởi tạo WebSocket Hub
+	// Kh?i t?o WebSocket Hub
 	hub := sockets.NewHub()
 	go hub.Run()
 
@@ -36,7 +36,7 @@ func main() {
 
 	config.ConnectDatabase()
 	// Tu dong tao bang
-	config.DB.AutoMigrate(&models.User{}, &models.Quiz{}, &models.Question{}, &models.Result{})
+	config.DB.AutoMigrate(&models.User{}, &models.Quiz{}, &models.Question{}, &models.Result{}, &models.Review{})
 
 	auth := r.Group("/auth")
 	{
@@ -57,6 +57,9 @@ func main() {
 		api.GET("/quizzes/:id", controllers.GetQuiz)
 		api.DELETE("/quizzes/:id", controllers.DeleteQuiz)
 		api.PATCH("/quizzes/:id/visibility", controllers.UpdateQuizVisibility)
+
+		api.POST("/quizzes/reviews", controllers.CreateReview)
+		api.GET("/quizzes/:id/reviews", controllers.GetQuizReviews)
 		api.POST("/results", controllers.SubmitResult)
 		api.GET("/stats/:id", controllers.GetUserStats)
 		api.GET("/users/:id/history", controllers.GetUserHistory)
@@ -64,3 +67,4 @@ func main() {
 
 	r.Run(":8080")
 }
+

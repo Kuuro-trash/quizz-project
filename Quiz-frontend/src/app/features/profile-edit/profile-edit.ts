@@ -36,7 +36,7 @@ export class ProfileEdit implements OnInit {
         this.user.bio = parsed.bio || 'Master of Logic & Digital Lore';
         this.user.avatar = parsed.avatar || '/User.png';
         
-        // Táº¡o Account ID báº±ng 5 kÃ½ tá»± Ä‘áº§u cá»§a ID, viáº¿t hoa
+        // Tạo Account ID báº±ng 5 kÃ½ tá»± Ä‘áº§u cá»§a ID, viáº¿t hoa
         if (parsed.id) {
           this.user.accountId = 'ID_' + parsed.id.substring(0, 5).toUpperCase();
         }

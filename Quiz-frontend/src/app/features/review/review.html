@@ -1,1 +1,89 @@
-<p>review works!</p>
+<div class="review-container">
+  <div class="main-layout-grid">
+   
+    <div class="main-content">
+      <div class="hero-card" *ngIf="quizDetails" [ngStyle]="{'background-image': quizDetails.cover_image ? 'linear-gradient(to right, rgba(246, 240, 255, 0.95), rgba(246, 240, 255, 0.8)), url(' + quizDetails.cover_image + ')' : ''}">
+        <h1 class="main-title">{{ quizDetails.title }}</h1>
+        <div class="hero-stats">
+          <div class="stars-group" *ngIf="reviews.length > 0">
+            <i class="pi pi-star-fill"></i>
+            <span class="rating-val">{{ averageRating }}</span>
+          </div>
+          <span class="stat-item">{{ reviews.length }} Reviews</span>
+          <span class="stat-item">{{ quizDetails.plays || 0 }} completions</span>
+        </div>
+      </div>
+
+      <div class="reviews-section">
+        <div class="section-header">
+          <h2>Community Reviews</h2>
+          <div class="sort-select">Latest First <i class="pi pi-chevron-down"></i></div>
+        </div>
+
+        @if (reviews.length === 0) {
+          <p>No reviews yet. Be the first to review this quiz!</p>
+        } @else {
+          @for (rev of reviews; track rev.id) {
+            <div class="review-card">
+              <div class="card-top">
+                <div class="user-block">
+                  <img [src]="rev.user?.avatar || 'User.png'" onerror="this.src='User.png'" class="user-avatar" alt="avatar">
+                  <div class="user-info">
+                    <h3>{{ rev.user?.username || 'Anonymous User' }}</h3>
+                    <p>Reviewed on {{ rev.created_at | date:'mediumDate' }}</p>
+                  </div>
+                </div>
+                <div class="stars-display">
+                  @for (s of getStars(rev.rating); track $index) { <i class="pi pi-star-fill"></i> }
+                  @for (s of getEmptyStars(rev.rating); track $index) { <i class="pi pi-star"></i> }
+                </div>
+              </div>
+              <p class="comment-text">{{ rev.comment || '' }}</p>
+            </div>
+          }
+        }
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <div class="side-card rating-overview-card" *ngIf="reviews.length > 0">
+        <h3>Rating Overview</h3>
+        <div class="rating-bars">
+          @for (star of [5,4,3,2,1]; track star) {
+            <div class="bar-row">
+              <span class="star-label">{{ star }} {{ star === 1 ? 'star' : 'stars' }}</span>
+              <div class="bar-bg">
+                <div class="bar-fill" [style.width.%]="getRatingPercentage(star)"></div>
+              </div>
+              <span class="pct">{{ getRatingPercentage(star) }}%</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="side-card review-form-card">
+        <h3>Rate this Quiz</h3>
+        <p class="sub-text">Your feedback helps the community find the best content.</p>
+       
+        <div class="star-picker">
+          @for (i of [1,2,3,4,5]; track i) {
+            <i class="pi"
+               [class.pi-star-fill]="i <= selectedRating"
+               [class.pi-star]="i > selectedRating"
+               (click)="setRating(i)"></i>
+          }
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">REVIEW COMMENTS</label>
+          <textarea [(ngModel)]="comment" placeholder="What did you think of the difficulty and quality?"></textarea>
+        </div>
+       
+        <div class="form-btns">
+          <button class="btn-primary" (click)="submitReview()">Submit Review</button>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
