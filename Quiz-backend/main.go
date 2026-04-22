@@ -1,4 +1,4 @@
-package main
+﻿package main
 
 import (
 	"log"
@@ -20,7 +20,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	// Kh?i t?o WebSocket Hub
+	// Khởi tạo WebSocket Hub
 	hub := sockets.NewHub()
 	go hub.Run()
 
@@ -57,14 +57,12 @@ func main() {
 		api.GET("/quizzes/:id", controllers.GetQuiz)
 		api.DELETE("/quizzes/:id", controllers.DeleteQuiz)
 		api.PATCH("/quizzes/:id/visibility", controllers.UpdateQuizVisibility)
-
-		api.POST("/quizzes/reviews", controllers.CreateReview)
-		api.GET("/quizzes/:id/reviews", controllers.GetQuizReviews)
 		api.POST("/results", controllers.SubmitResult)
 		api.GET("/stats/:id", controllers.GetUserStats)
 		api.GET("/users/:id/history", controllers.GetUserHistory)
+		api.POST("/quizzes/reviews", controllers.CreateReview)
+		api.GET("/quizzes/:id/reviews", controllers.GetQuizReviews)
 	}
 
 	r.Run(":8080")
 }
-
