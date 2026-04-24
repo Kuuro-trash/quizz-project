@@ -109,7 +109,9 @@ func CreateQuiz(c *gin.Context) {
 
 func GetQuizzes(c *gin.Context) {
 	var quizzes []models.Quiz
-	if err := config.DB.Preload("Creator").Preload("Questions").Order("created_at desc").Find(&quizzes).Error; err != nil {
+	if err := config.DB.Preload("Creator").Preload("Questions").Preload("Reviews").Order("created_at desc").Find(&quizzes).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch quizzes"})
+		return
 	}
 	c.JSON(http.StatusOK, quizzes)
 }
@@ -123,7 +125,7 @@ func GetQuiz(c *gin.Context) {
 
 	var quiz models.Quiz
 
-	if err := config.DB.Preload("Creator").Preload("Questions").First(&quiz, "id = ?", id).Error; err != nil {
+	if err := config.DB.Preload("Creator").Preload("Questions").Preload("Reviews").First(&quiz, "id = ?", id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Quiz not found"})
 		return
 	}

@@ -5,8 +5,13 @@ import { Footer } from '../../shared/components/footer/footer';
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, Navbar, Footer],
+  standalone: true,
+  // Đừng quên import các thành phần này
+  imports: [RouterOutlet, Navbar, Footer], 
   templateUrl: './main-layout.html',
-  styleUrl: './main-layout.css',
+  styleUrl: './main-layout.css'
 })
-export class MainLayout {}
+export class MainLayout {
+  // Layout này mặc định dùng type profile cho Navbar
+  navType: 'profile' | 'default' = 'profile';
+}

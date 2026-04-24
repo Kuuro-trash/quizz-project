@@ -33,14 +33,20 @@ export class Dashboard implements OnInit {
         // Lấy tối đa 4 quiz
         this.quizzes = adminQuizzes.slice(0, 4).map(q => {
           const plays = q.plays || 0;
+          let comments = 0;
+          let rating = 0;
+          if (q.reviews && q.reviews.length > 0) {
+             comments = q.reviews.length;
+             const sum = q.reviews.reduce((a: number, b: any) => a + b.rating, 0);
+             rating = Math.round((sum / comments) * 10) / 10;
+          }
           return {
             id: q.id || q.ID,
             title: q.title,
             stats: `${plays} Plays - ` + (q.questions ? q.questions.length : 0) + ' Questions',
             plays: plays,
-            hosts: q.hosts || 0,
-            comments: q.comments || 0,
-            rating: 5.0,
+            comments: comments,
+            rating: rating || 0,
             img: q.cover_image && q.cover_image.startsWith('data:image') ? q.cover_image : '/Cyber.png'
           };
         });
