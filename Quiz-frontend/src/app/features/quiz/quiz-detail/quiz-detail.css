@@ -1,4 +1,4 @@
-﻿﻿﻿.quiz-detail-container {
+.quiz-detail-container {
   background: #fdfaff;
   min-height: 100vh;
   padding: 40px 20px;
@@ -474,7 +474,7 @@
   flex: 1;
 }
 
-/* Fix dính chữ và phông chữ cho Meta */
+/* Fix d�nh ch? v� ph�ng ch? cho Meta */
 .q-meta {
   display: flex;
   align-items: center;
@@ -510,7 +510,7 @@
 }
 
 .points-tag {
-  background: #fef3f2; /* Màu đỏ nhạt pastel cho Points */
+  background: #fef3f2; /* M�u d? nh?t pastel cho Points */
   color: #b42318;
 }
 
@@ -545,10 +545,10 @@
   box-shadow: 0 4px 12px rgba(112, 41, 255, 0.1);
 }
 
-/* Fix QUIZ SUMMARY bị dính câu */
+/* Fix QUIZ SUMMARY b? d�nh c�u */
 .summary-text {
   display: block;
-  margin-bottom: 16px !important; /* Tạo khoảng cách giữa 2 câu */
+  margin-bottom: 16px !important; /* T?o kho?ng c�ch gi?a 2 c�u */
 }
 
 .last-summary {

@@ -88,7 +88,7 @@ export class MultiLobby implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
-    this.ws.disconnect();
+    // Do NOT disconnect the socket here, because we need it in the Game Room
   }
 
   // ─────────────────────────────────────────
@@ -151,6 +151,14 @@ export class MultiLobby implements OnInit, OnDestroy {
   // ─────────────────────────────────────────
 
   private listenToWsEvents(): void {
+
+    // Lắng nghe lỗi Websocket
+    this.subs.add(
+      this.ws.on(''error'').subscribe((msg: any) => {
+        alert(msg.data || ''Lỗi kết nối phòng'');
+        this.leaveRoom();
+      })
+    );
 
     // Có player mới vào phòng → cập nhật danh sách
     this.subs.add(

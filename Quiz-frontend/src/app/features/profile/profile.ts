@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
@@ -13,6 +13,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 export class Profile implements OnInit {
   private http = inject(HttpClient);
   private cd = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   user = {
     id: '',
@@ -36,6 +37,11 @@ export class Profile implements OnInit {
   rawHistory: any[] = [];
   historySessions: any[] = [];
 
+  // BỔ SUNG ĐÚNG 3 BIẾN PHÂN TRANG
+  currentPage: number = 1;
+  pageSize: number = 5;
+  totalPages: number = 1;
+
   createdQuizzes: any[] = [];
 
   ngOnInit() {
@@ -55,6 +61,17 @@ export class Profile implements OnInit {
       this.fetchUserHistory();
     }
     this.fetchMyQuizzes();
+  }
+
+  // BỔ SUNG HÀM LOGOUT VỚI XÁC NHẬN
+  logout() {
+    const confirmLogout = window.confirm("Are you sure you want to log out?");
+    if (confirmLogout) {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      // Chuyển hướng về trang chủ
+      this.router.navigate(['/home']);
+    }
   }
 
   fetchUserStats() {
@@ -86,16 +103,59 @@ export class Profile implements OnInit {
 
   setHistoryMode(mode: 'solo' | 'multi') {
     this.historyMode = mode;
+    this.currentPage = 1;
     this.updateDisplayedHistory();
   }
 
+  // CẬP NHẬT: THÊM SLICE ĐỂ PHÂN TRANG
   updateDisplayedHistory() {
+    let filtered = [];
     if (this.historyMode === 'solo') {
-      this.historySessions = this.rawHistory.filter(h => h.is_solo);
+      filtered = this.rawHistory.filter(h => h.is_solo);
     } else {
-      this.historySessions = this.rawHistory.filter(h => !h.is_solo);
+      filtered = this.rawHistory.filter(h => !h.is_solo);
     }
+
+    this.totalPages = Math.ceil(filtered.length / this.pageSize) || 1;
+    
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    this.historySessions = filtered.slice(startIndex, startIndex + this.pageSize);
+
     this.cd.detectChanges();
+  }
+
+  // BỔ SUNG CÁC HÀM PHÂN TRANG
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updateDisplayedHistory();
+    }
+  }
+
+  getPagesArray(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  // BỔ SUNG PHÂN TRANG CHO MY CREATED QUIZZES
+  quizCurrentPage: number = 1;
+  quizzesPerPage: number = 3;
+
+  get displayedQuizzes() {
+    const startIndex = (this.quizCurrentPage - 1) * this.quizzesPerPage;
+    return this.createdQuizzes.slice(startIndex, startIndex + this.quizzesPerPage);
+  }
+
+  prevQuizPage() {
+    if (this.quizCurrentPage > 1) {
+      this.quizCurrentPage--;
+    }
+  }
+
+  nextQuizPage() {
+    const maxPage = Math.ceil(this.createdQuizzes.length / this.quizzesPerPage) || 1;
+    if (this.quizCurrentPage < maxPage) {
+      this.quizCurrentPage++;
+    }
   }
 
   updateDisplayedStats() {

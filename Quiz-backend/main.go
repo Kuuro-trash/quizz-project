@@ -20,7 +20,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	// Kh?i t?o WebSocket Hub
+	// Khởi tạo WebSocket Hub
 	hub := sockets.NewHub()
 	go hub.Run()
 
@@ -35,7 +35,7 @@ func main() {
 	}))
 
 	config.ConnectDatabase()
-	// Tu dong tao bang
+	// Tự động tạo bảng nếu chưa tồn tại
 	config.DB.AutoMigrate(&models.User{}, &models.Quiz{}, &models.Question{}, &models.Result{}, &models.Review{})
 
 	auth := r.Group("/auth")
@@ -56,7 +56,7 @@ func main() {
 		api.GET("/quizzes", controllers.GetQuizzes)
 		api.GET("/quizzes/:id", controllers.GetQuiz)
 		api.PUT("/quizzes/:id", controllers.UpdateQuiz)
-                api.DELETE("/quizzes/:id", controllers.DeleteQuiz)
+		api.DELETE("/quizzes/:id", controllers.DeleteQuiz)
 		api.PATCH("/quizzes/:id/visibility", controllers.UpdateQuizVisibility)
 		api.POST("/results", controllers.SubmitResult)
 		api.GET("/stats/:id", controllers.GetUserStats)

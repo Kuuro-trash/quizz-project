@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type CreateQuizInput struct {
@@ -72,7 +73,7 @@ func CreateQuiz(c *gin.Context) {
 	}
 
 	var questions []models.Question
-	for _, qData := range input.Questions {
+	for i, qData := range input.Questions {
 		optionsJSON, err := json.Marshal(qData.Answers)
 		if err != nil {
 			tx.Rollback()
@@ -87,6 +88,7 @@ func CreateQuiz(c *gin.Context) {
 			Points:          qData.Points,
 			MultipleCorrect: qData.MultipleCorrect,
 			Options:         string(optionsJSON),
+			OrderIndex:      i,
 		}
 		questions = append(questions, q)
 	}
@@ -109,7 +111,7 @@ func CreateQuiz(c *gin.Context) {
 
 func GetQuizzes(c *gin.Context) {
 	var quizzes []models.Quiz
-	if err := config.DB.Preload("Creator").Preload("Questions").Preload("Reviews").Order("created_at desc").Find(&quizzes).Error; err != nil {
+	if err := config.DB.Preload("Creator").Preload("Questions", func(db *gorm.DB) *gorm.DB { return db.Order("order_index asc") }).Preload("Reviews").Order("created_at desc").Find(&quizzes).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch quizzes"})
 		return
 	}
@@ -125,7 +127,7 @@ func GetQuiz(c *gin.Context) {
 
 	var quiz models.Quiz
 
-	if err := config.DB.Preload("Creator").Preload("Questions").Preload("Reviews").First(&quiz, "id = ?", id).Error; err != nil {
+	if err := config.DB.Preload("Creator").Preload("Questions", func(db *gorm.DB) *gorm.DB { return db.Order("order_index asc") }).Preload("Reviews").First(&quiz, "id = ?", id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Quiz not found"})
 		return
 	}
@@ -174,78 +176,76 @@ func DeleteQuiz(c *gin.Context) {
 }
 
 func UpdateQuiz(c *gin.Context) {
-id := c.Param("id")
-if id == "" {
-c.JSON(http.StatusBadRequest, gin.H{"error": "ID is required"})
-return
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID is required"})
+		return
+	}
+
+	var input CreateQuizInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body", "details": err.Error()})
+		return
+	}
+
+	if input.Title == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Title is required"})
+		return
+	}
+
+	tx := config.DB.Begin()
+
+	var quiz models.Quiz
+	if err := tx.First(&quiz, "id = ?", id).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusNotFound, gin.H{"error": "Quiz not found"})
+		return
+	}
+
+	quiz.Title = input.Title
+	quiz.Description = input.Description
+	quiz.Level = input.Level
+	quiz.Visibility = input.Visibility
+	quiz.CoverImage = input.CoverImage
+
+	if err := tx.Save(&quiz).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update quiz"})
+		return
+	}
+
+	// Delete old questions
+	if err := tx.Where("quiz_id = ?", quiz.ID).Delete(&models.Question{}).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to remove old questions"})
+		return
+	}
+
+	// Add new questions
+	for i, qInput := range input.Questions {
+		ansBytes, _ := json.Marshal(qInput.Answers)
+
+		question := models.Question{
+			QuizID:          quiz.ID,
+			Content:         qInput.Content,
+			Options:         string(ansBytes),
+			TimeLimit:       qInput.TimeLimit,
+			Points:          qInput.Points,
+			MultipleCorrect: qInput.MultipleCorrect,
+			OrderIndex:      i,
+		}
+
+		if err := tx.Create(&question).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to recreate questions"})
+			return
+		}
+	}
+
+	tx.Commit()
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Quiz updated successfully",
+		"quiz":    quiz,
+	})
 }
-
-var input CreateQuizInput
-if err := c.ShouldBindJSON(&input); err != nil {
-c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body", "details": err.Error()})
-return
-}
-
-if input.Title == "" {
-c.JSON(http.StatusBadRequest, gin.H{"error": "Title is required"})
-return
-}
-
-tx := config.DB.Begin()
-
-var quiz models.Quiz
-if err := tx.First(&quiz, "id = ?", id).Error; err != nil {
-tx.Rollback()
-c.JSON(http.StatusNotFound, gin.H{"error": "Quiz not found"})
-return
-}
-
-quiz.Title = input.Title
-quiz.Description = input.Description
-quiz.Level = input.Level
-quiz.Visibility = input.Visibility
-quiz.CoverImage = input.CoverImage
-
-if err := tx.Save(&quiz).Error; err != nil {
-tx.Rollback()
-c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update quiz"})
-return
-}
-
-// Delete old questions
-if err := tx.Where("quiz_id = ?", quiz.ID).Delete(&models.Question{}).Error; err != nil {
-tx.Rollback()
-c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to remove old questions"})
-return
-}
-
-// Add new questions
-for _, qInput := range input.Questions {
-ansBytes, _ := json.Marshal(qInput.Answers)
-
-question := models.Question{
-QuizID:          quiz.ID,
-Content:         qInput.Content,
-Options:         string(ansBytes),
-TimeLimit:       qInput.TimeLimit,
-Points:          qInput.Points,
-MultipleCorrect: qInput.MultipleCorrect,
-}
-
-if err := tx.Create(&question).Error; err != nil {
-tx.Rollback()
-c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to recreate questions"})
-return
-}
-}
-
-tx.Commit()
-
-c.JSON(http.StatusOK, gin.H{
-"message": "Quiz updated successfully",
-"quiz":    quiz,
-})
-}
-
-
-
