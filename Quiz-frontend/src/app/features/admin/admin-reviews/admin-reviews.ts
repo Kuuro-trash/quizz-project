@@ -21,8 +21,6 @@ interface AdminQuiz {
   title: string;
 }
 
-allQuizzes: AdminQuiz[] = [];
-
 @Component({
   selector: 'app-admin-reviews',
   standalone: true,
@@ -34,6 +32,7 @@ export class AdminReviews implements OnInit {
   private http = inject(HttpClient);
 
   reviews: AdminReview[] = [];
+  allQuizzes: AdminQuiz[] = [];
 
   searchText = '';
   quizFilter = '';

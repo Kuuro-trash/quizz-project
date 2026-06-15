@@ -115,8 +115,8 @@
       <div
         class="discussion-item"
         *ngFor="let quiz of quizCards"
-        [class.danger]="quizFilter === quiz.title"
-        (click)="quizFilter = quiz.title"
+        [class.danger]="quizFilter === quiz.id"
+        (click)="quizFilter = quiz.id"
         style="cursor:pointer;"
       >
         <span class="material-symbols-outlined">quiz</span>
@@ -197,9 +197,9 @@
 
       <option
         *ngFor="let quiz of quizzes"
-        [value]="quiz"
+        [value]="quiz.id"
       >
-        {{ quiz }}
+        {{ quiz.title }}
       </option>
     </select>
 

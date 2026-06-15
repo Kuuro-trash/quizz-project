@@ -71,6 +71,9 @@ func main() {
 		api.GET("/admin/users", controllers.GetAdminUsers)
 		api.GET("/admin/users/stats", controllers.GetAdminUserStats)
 		api.PATCH("/admin/users/:id/status", controllers.ToggleUserStatus)
+
+		api.GET("/admin/reviews", controllers.GetAdminReviews)
+		api.DELETE("/admin/reviews/:id", controllers.DeleteAdminReview)
 	}
 
 	r.Run(":8080")
