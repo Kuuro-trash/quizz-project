@@ -178,7 +178,7 @@ export class Review implements OnInit, OnDestroy {
       comment: this.comment
     };
 
-    this.http.post(`${this.apiUrl}/quizzes/reviews`, payload).subscribe({
+    this.http.post(`${this.apiUrl}/reviews`, payload).subscribe({
       next: () => {
         alert('Review submitted successfully!');
         this.selectedRating = 0;

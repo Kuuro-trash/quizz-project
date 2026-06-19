@@ -1,7 +1,7 @@
 <div class="review-container">
   <div class="main-layout-grid">
     
-    <div class="main-content">
+    <div class="review-main-content">
       <!-- HERO AREA -->
       <div class="hero-card" [ngStyle]="{'background-image': quizDetails?.cover_image ? 'linear-gradient(to right, rgba(246, 240, 255, 0.95), rgba(246, 240, 255, 0.8)), url(' + quizDetails.cover_image + ')' : ''}">
         <h1 class="main-title">{{ quizDetails?.title }}</h1>
@@ -56,7 +56,7 @@
     </div>
 
     <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <aside class="review-sidebar">
       <div class="side-card stats-card">
         <div class="stats-card-header">
           <h3>Rating Overview</h3>

@@ -247,3 +247,100 @@ func GetLeaderboard(c *gin.Context) {
 
 	c.JSON(http.StatusOK, results)
 }
+func GetAdminDashboard(c *gin.Context) {
+	var totalUsers int64
+	var totalQuizzes int64
+	var totalQuestions int64
+	var totalResults int64
+	var totalReviews int64
+
+	config.DB.Model(&models.User{}).Count(&totalUsers)
+	config.DB.Model(&models.Quiz{}).Count(&totalQuizzes)
+	config.DB.Model(&models.Question{}).Count(&totalQuestions)
+	config.DB.Model(&models.Result{}).Count(&totalResults)
+	config.DB.Model(&models.Review{}).Count(&totalReviews)
+
+	c.JSON(http.StatusOK, gin.H{
+		"totalUsers":     totalUsers,
+		"totalQuizzes":   totalQuizzes,
+		"totalQuestions": totalQuestions,
+		"totalResults":   totalResults,
+		"totalReviews":   totalReviews,
+		"activeRooms":    0,
+	})
+}
+func GetAdminQuizzes(c *gin.Context) {
+	type AdminQuizResponse struct {
+		ID            string  `json:"id"`
+		Title         string  `json:"title"`
+		Description   string  `json:"description"`
+		Level         string  `json:"level"`
+		Visibility    string  `json:"visibility"`
+		CoverImage    string  `json:"cover_image"`
+		Plays         int     `json:"plays"`
+		CreatedAt     string  `json:"created_at"`
+		CreatorID     string  `json:"creator_id"`
+		Creator       string  `json:"creator"`
+		QuestionCount int64   `json:"questionCount"`
+		Rating        float64 `json:"rating"`
+		ReviewCount   int64   `json:"reviewCount"`
+	}
+
+	var quizzes []models.Quiz
+
+	if err := config.DB.Order("created_at DESC").Find(&quizzes).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot fetch quizzes"})
+		return
+	}
+
+	var response []AdminQuizResponse
+
+	for _, quiz := range quizzes {
+		var questionCount int64
+		var reviewCount int64
+		var avgRating float64
+		var creator models.User
+
+		config.DB.Model(&models.Question{}).
+			Where("quiz_id = ?", quiz.ID).
+			Count(&questionCount)
+
+		config.DB.Model(&models.Review{}).
+			Where("quiz_id = ?", quiz.ID).
+			Count(&reviewCount)
+
+		config.DB.Model(&models.Review{}).
+			Where("quiz_id = ?", quiz.ID).
+			Select("COALESCE(AVG(rating), 0)").
+			Scan(&avgRating)
+
+		creatorName := "Unknown"
+		creatorID := ""
+
+		if quiz.CreatedBy != nil {
+			creatorID = quiz.CreatedBy.String()
+
+			if err := config.DB.Where("id = ?", quiz.CreatedBy).First(&creator).Error; err == nil {
+				creatorName = creator.Username
+			}
+		}
+
+		response = append(response, AdminQuizResponse{
+			ID:            quiz.ID.String(),
+			Title:         quiz.Title,
+			Description:   quiz.Description,
+			Level:         quiz.Level,
+			Visibility:    quiz.Visibility,
+			CoverImage:    quiz.CoverImage,
+			Plays:         quiz.Plays,
+			CreatedAt:     quiz.CreatedAt.Format("2006-01-02T15:04:05Z"),
+			CreatorID:     creatorID,
+			Creator:       creatorName,
+			QuestionCount: questionCount,
+			Rating:        avgRating,
+			ReviewCount:   reviewCount,
+		})
+	}
+
+	c.JSON(http.StatusOK, response)
+}

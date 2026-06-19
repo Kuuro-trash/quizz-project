@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import {
   NgApexchartsModule,
   ApexAxisChartSeries,
@@ -15,6 +16,8 @@ import {
   ApexLegend
 } from 'ng-apexcharts';
 
+import { AdminApi } from '../../../services/admin-api';
+
 interface AnalyticsKpi {
   label: string;
   value: string;
@@ -22,6 +25,12 @@ interface AnalyticsKpi {
   icon: string;
   iconClass: string;
   trendClass: string;
+}
+
+interface DailyActivity {
+  date: string;
+  solo: number;
+  multi: number;
 }
 
 export type ChartOptions = {
@@ -42,211 +51,320 @@ export type ChartOptions = {
 @Component({
   selector: 'app-admin-analytics',
   standalone: true,
-  imports: [CommonModule, NgApexchartsModule],
+  imports: [CommonModule, FormsModule, NgApexchartsModule],
   templateUrl: './admin-analytics.html',
   styleUrl: './admin-analytics.css'
 })
-export class AdminAnalytics {
-  kpis: AnalyticsKpi[] = [
-    {
-      label: 'Page Views',
-      value: '2.4M',
-      note: '+18.3%',
-      icon: 'visibility',
-      iconClass: 'bg-primary-soft text-primary',
-      trendClass: 'text-tertiary'
-    },
-    {
-      label: 'Avg Session',
-      value: '8.4m',
-      note: '+2.1%',
-      icon: 'timer',
-      iconClass: 'bg-secondary-soft text-secondary',
-      trendClass: 'text-primary'
-    },
-    {
-      label: 'Bounce Rate',
-      value: '21.7%',
-      note: '-3.2%',
-      icon: 'logout',
-      iconClass: 'bg-tertiary-soft text-tertiary',
-      trendClass: 'text-tertiary'
-    },
-    {
-      label: 'Completion Rate',
-      value: '74.2%',
-      note: '+6.8%',
-      icon: 'check_circle',
-      iconClass: 'bg-primary-soft text-primary',
-      trendClass: 'text-primary'
+export class AdminAnalytics implements OnInit {
+  selectedRange = '30';
+
+  soloGames = 0;
+  multiGames = 0;
+  totalReviews = 0;
+  activeRooms = 0;
+
+  kpis: AnalyticsKpi[] = [];
+
+  chartOptions: ChartOptions = this.buildChartOptions(
+    ['No Data'],
+    [0],
+    [0]
+  );
+
+  constructor(
+    private adminApi: AdminApi,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.loadAnalytics();
+  }
+
+  changeRange(): void {
+    this.loadAnalytics();
+  }
+
+  loadAnalytics(): void {
+    this.adminApi.getAnalytics(this.selectedRange).subscribe({
+      next: (data: any) => {
+        console.log('ANALYTICS DATA:', data);
+
+        const solo = Number(data.soloGames || 0);
+        const multi = Number(data.multiGames || 0);
+        const totalGames = Number(data.totalResults || solo + multi);
+        const reviews = Number(data.totalReviews || 0);
+
+        this.soloGames = solo;
+        this.multiGames = multi;
+        this.totalReviews = reviews;
+        this.activeRooms = Number(data.activeRooms || 0);
+
+        this.kpis = [
+          {
+            label: 'Total Users',
+            value: this.formatNumber(data.totalUsers || 0),
+            note: this.getRangeLabel(),
+            icon: 'group',
+            iconClass: 'bg-primary-soft text-primary',
+            trendClass: 'text-primary'
+          },
+          {
+            label: 'Total Quizzes',
+            value: this.formatNumber(data.totalQuizzes || 0),
+            note: 'Created quiz content',
+            icon: 'quiz',
+            iconClass: 'bg-secondary-soft text-secondary',
+            trendClass: 'text-primary'
+          },
+          {
+            label: 'Total Results',
+            value: this.formatNumber(totalGames),
+            note: `${solo} solo / ${multi} multi`,
+            icon: 'sports_esports',
+            iconClass: 'bg-tertiary-soft text-tertiary',
+            trendClass: 'text-tertiary'
+          },
+          {
+            label: 'Reviews',
+            value: this.formatNumber(reviews),
+            note: 'Community feedback',
+            icon: 'rate_review',
+            iconClass: 'bg-primary-soft text-primary',
+            trendClass: 'text-primary'
+          }
+        ];
+
+        const dailyActivity = this.normalizeDailyActivity(data.dailyActivity || []);
+
+        this.chartOptions = this.buildChartOptions(
+          dailyActivity.map(item => item.date),
+          dailyActivity.map(item => item.solo),
+          dailyActivity.map(item => item.multi)
+        );
+
+        this.cdr.detectChanges();
+      },
+      error: err => {
+        console.error('Load analytics failed:', err);
+        this.setFallbackData();
+      }
+    });
+  }
+
+  private normalizeDailyActivity(source: any[]): DailyActivity[] {
+    if (!Array.isArray(source) || source.length === 0) {
+      return [{ date: 'No Data', solo: 0, multi: 0 }];
     }
-  ];
 
-  chartOptions: ChartOptions = {
-    series: [
+    return source.map((item: any) => ({
+      date: this.formatChartDate(item.date || item.day || item.created_at || item.createdAt),
+      solo: Number(item.solo || item.soloGames || 0),
+      multi: Number(item.multi || item.multiGames || 0)
+    }));
+  }
+
+  private formatChartDate(value: string): string {
+    if (!value) return 'Unknown';
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return date.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  }
+
+  getRangeLabel(): string {
+    if (this.selectedRange === 'today') return 'Today';
+    if (this.selectedRange === '7') return 'Last 7 days';
+    if (this.selectedRange === '30') return 'Last 30 days';
+    return 'All time';
+  }
+
+  get totalGameCount(): number {
+    return this.soloGames + this.multiGames + this.totalReviews + this.activeRooms;
+  }
+
+  get soloPercent(): number {
+    return this.calcPercent(this.soloGames);
+  }
+
+  get multiPercent(): number {
+    return this.calcPercent(this.multiGames);
+  }
+
+  get reviewPercent(): number {
+    return this.calcPercent(this.totalReviews);
+  }
+
+  get activeRoomPercent(): number {
+    return this.calcPercent(this.activeRooms);
+  }
+
+  private calcPercent(value: number): number {
+    if (this.totalGameCount <= 0) return 8;
+    return Math.max(8, Math.round((Number(value || 0) / this.totalGameCount) * 100));
+  }
+
+  private setFallbackData(): void {
+    this.soloGames = 0;
+    this.multiGames = 0;
+    this.totalReviews = 0;
+    this.activeRooms = 0;
+
+    this.kpis = [
       {
-        name: 'Active Users',
-        data: [
-          4300, 4100, 4700, 3600, 4250,
-          4200, 4650, 3400, 3650, 2550,
-          2950, 3450, 3850, 3650, 2550,
-          4400, 3650, 4420, 4300, 4380,
-          4520, 4870, 3250, 2920, 4320,
-          3150, 2450, 2420, 2480, 3200
-        ]
+        label: 'Total Users',
+        value: '0',
+        note: 'Backend unavailable',
+        icon: 'group',
+        iconClass: 'bg-primary-soft text-primary',
+        trendClass: 'text-primary'
       },
       {
-        name: '7-day Avg',
-        data: [
-          null, null, null, null, null,
-          null, 4200, 4100, 4050, 3820,
-          3600, 3450, 3350, 3200, 3250,
-          3400, 3600, 3750, 3850, 3950,
-          4100, 4350, 4200, 4100, 4080,
-          3900, 3650, 3400, 3000, 3250
-        ]
+        label: 'Total Quizzes',
+        value: '0',
+        note: 'Backend unavailable',
+        icon: 'quiz',
+        iconClass: 'bg-secondary-soft text-secondary',
+        trendClass: 'text-primary'
+      },
+      {
+        label: 'Total Results',
+        value: '0',
+        note: 'Backend unavailable',
+        icon: 'sports_esports',
+        iconClass: 'bg-tertiary-soft text-tertiary',
+        trendClass: 'text-tertiary'
+      },
+      {
+        label: 'Reviews',
+        value: '0',
+        note: 'Backend unavailable',
+        icon: 'rate_review',
+        iconClass: 'bg-primary-soft text-primary',
+        trendClass: 'text-primary'
       }
-    ],
+    ];
 
-    chart: {
-      type: 'area',
-      height: 360,
-      toolbar: {
-        show: false
-      },
-      zoom: {
-        enabled: false
-      },
-      animations: {
-        enabled: true,
-        speed: 950,
-        animateGradually: {
-          enabled: true,
-          delay: 80
-        },
-        dynamicAnimation: {
-          enabled: true,
-          speed: 500
-        }
-      },
-      fontFamily: 'Manrope, Arial, sans-serif',
-      foreColor: '#68537c'
-    },
+    this.chartOptions = this.buildChartOptions(['No Data'], [0], [0]);
+    this.cdr.detectChanges();
+  }
 
-    colors: ['#6e12f8', '#b30064'],
+  private buildChartOptions(
+    categories: string[],
+    soloData: number[],
+    multiData: number[]
+  ): ChartOptions {
+    const maxValue = Math.max(...soloData, ...multiData, 5);
 
-    stroke: {
-      curve: 'smooth',
-      width: [4, 2],
-      dashArray: [0, 6]
-    },
-
-    fill: {
-      type: 'gradient',
-      opacity: [0.28, 0],
-      gradient: {
-        shadeIntensity: 0.2,
-        opacityFrom: 0.28,
-        opacityTo: 0.03,
-        stops: [0, 90, 100]
-      }
-    },
-
-    dataLabels: {
-      enabled: false
-    },
-
-    markers: {
-      size: 0,
-      strokeWidth: 3,
-      strokeColors: '#ffffff',
-      hover: {
-        size: 7
-      }
-    },
-
-    grid: {
-      borderColor: 'rgba(188, 164, 209, 0.24)',
-      strokeDashArray: 0,
-      xaxis: {
-        lines: {
-          show: false
-        }
-      },
-      yaxis: {
-        lines: {
-          show: true
-        }
-      },
-      padding: {
-        left: 8,
-        right: 8,
-        top: 8,
-        bottom: 0
-      }
-    },
-
-    xaxis: {
-      categories: [
-        'Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5',
-        'Day 6', 'Day 7', 'Day 8', 'Day 9', 'Day 10',
-        'Day 11', 'Day 12', 'Day 13', 'Day 14', 'Day 15',
-        'Day 16', 'Day 17', 'Day 18', 'Day 19', 'Day 20',
-        'Day 21', 'Day 22', 'Day 23', 'Day 24', 'Day 25',
-        'Day 26', 'Day 27', 'Day 28', 'Day 29', 'Day 30'
+    return {
+      series: [
+        { name: 'Solo Games', data: soloData },
+        { name: 'Multi Games', data: multiData }
       ],
-      tickAmount: 7,
-      labels: {
-        style: {
-          colors: '#8a78a0',
-          fontSize: '12px',
-          fontWeight: 700
+
+      chart: {
+        type: 'area',
+        height: 380,
+        toolbar: { show: false },
+        zoom: { enabled: false },
+        animations: { enabled: true, speed: 600 },
+        fontFamily: 'Manrope, Arial, sans-serif',
+        foreColor: '#68537c'
+      },
+
+      colors: ['#6e12f8', '#b30064'],
+
+      stroke: {
+        curve: 'smooth',
+        width: [4, 4]
+      },
+
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shadeIntensity: 0.6,
+          opacityFrom: 0.38,
+          opacityTo: 0.04,
+          stops: [0, 90, 100]
         }
       },
-      axisBorder: {
-        show: false
-      },
-      axisTicks: {
-        show: false
-      },
-      tooltip: {
-        enabled: false
-      }
-    },
 
-    yaxis: {
-      min: 2000,
-      max: 5000,
-      tickAmount: 6,
-      labels: {
-        formatter: (value: number): string => {
-          return `${value / 1000}k`;
+      dataLabels: { enabled: false },
+
+      markers: {
+        size: 4,
+        strokeWidth: 3,
+        strokeColors: '#ffffff',
+        hover: { size: 7 }
+      },
+
+      grid: {
+        borderColor: 'rgba(188, 164, 209, 0.24)',
+        strokeDashArray: 4,
+        yaxis: { lines: { show: true } },
+        padding: { left: 8, right: 8, top: 8, bottom: 0 }
+      },
+
+      xaxis: {
+        categories,
+        labels: {
+          rotate: -25,
+          trim: false,
+          hideOverlappingLabels: true,
+          style: {
+            colors: '#8a78a0',
+            fontSize: '11px',
+            fontWeight: 700
+          }
         },
-        style: {
-          colors: '#8a78a0',
-          fontSize: '12px',
-          fontWeight: 700
-        }
-      }
-    },
-
-    tooltip: {
-      enabled: true,
-      shared: true,
-      intersect: false,
-      theme: 'light',
-      marker: {
-        show: true
+        axisBorder: { show: false },
+        axisTicks: { show: false },
+        tooltip: { enabled: false }
       },
-      y: {
-        formatter: (value: number): string => {
-          return `${value.toLocaleString()}`;
-        }
-      }
-    },
 
-    legend: {
-      show: false
-    }
-  };
+      yaxis: {
+        min: 0,
+        max: Math.ceil(maxValue * 1.25),
+        tickAmount: 5,
+        labels: {
+          formatter: (value: number): string => `${Math.round(value)}`,
+          style: {
+            colors: '#8a78a0',
+            fontSize: '12px',
+            fontWeight: 700
+          }
+        }
+      },
+
+      tooltip: {
+        enabled: true,
+        shared: true,
+        intersect: false,
+        theme: 'light',
+        y: {
+          formatter: (value: number): string => `${Math.round(value)} games`
+        }
+      },
+
+      legend: {
+        show: true,
+        position: 'top',
+        horizontalAlign: 'right',
+        fontSize: '12px',
+        fontWeight: 800,
+        labels: { colors: '#68537c' }
+      }
+    };
+  }
+
+  formatNumber(value: number): string {
+    return Number(value || 0).toLocaleString();
+  }
 }

@@ -113,7 +113,7 @@
 }
 
 /* ===== SIDEBAR ===== */
-.sidebar { }
+.review-sidebar { }
 
 .side-card {
   padding: 2rem;
@@ -283,5 +283,5 @@ textarea:focus { border-color: #7c3aed; background: white; }
   .hero-stats { gap: 0.75rem; font-size: 0.85rem; }
   .review-card { padding: 1rem; }
   .user-info h3 { font-size: 1rem; }
-  .side-card { padding: 1.2rem; }
+  .review-sidebar .side-card { padding: 1.2rem; }
 }

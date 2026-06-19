@@ -320,4 +320,3 @@ export class MultiLobby implements OnInit, OnDestroy {
     sessionStorage.removeItem('roomGameMode');
   }
 }
-

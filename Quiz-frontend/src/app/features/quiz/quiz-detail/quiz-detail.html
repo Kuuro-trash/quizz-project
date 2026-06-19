@@ -2,12 +2,14 @@
   <div class="main-layout-grid">
    
     <!-- C?T TR�I -->
-    <div class="main-content">
+    <div class="quiz-main-content">
      
       @if (isOwner) {
         <!-- HERO AREA FOR OWNER -->
-        <div class="hero-card hero-owner" [style.backgroundImage]="'url(' + quizData.imageUser + ')'">
-          <div class="hero-info">
+        <div class="hero-card hero-owner">
+        <img class="owner-cover" [src]="quizData.imageUser" alt="Quiz Cover" />
+
+        <div class="hero-info">
             <h1 class="main-title">{{ quizData.title }}</h1>
             <div class="stats-bar" style="flex-wrap: wrap;">
               <span class="stat-item"><i class="pi pi-play-circle"></i> {{ quizData.plays }} Plays</span>
@@ -147,7 +149,7 @@
     </div>
 
     <!-- C?T PH?I (SIDEBAR G?C) -->
-    <aside class="sidebar">
+    <aside class="quiz-sidebar">
       @if (isOwner) {
         <div class="side-card quick-actions-card">
           <span class="side-label">QUICK ACTIONS</span>
